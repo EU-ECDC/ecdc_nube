@@ -9,7 +9,7 @@ include { SALMISO } from './modules/salmiso.nf'
 include { ECOLIISO } from './modules/ecoliiso.nf'
 include { CAMPISO } from './modules/campiso.nf'
 include { HAVISO } from './modules/haviso.nf'
-
+include { POLIISO } from './modules/poliiso.nf'
 
 
 def parseJson(input_file){
@@ -489,6 +489,18 @@ b.sequences.view()
       it.payLoad.experiment_list]
     }
 )
+POLIISO(b.sequences.filter{it -> it.payLoad.organism == "POLIISO"}.map{it -> [
+      it.payLoad.sequences,
+      it.payLoad.flags,
+      it.payLoad.project,
+      it.payLoad.organism,
+      it.payLoad.key, 
+      it.payLoad.experiment_list]
+    }
+)
+
+
+
 
 }
 
