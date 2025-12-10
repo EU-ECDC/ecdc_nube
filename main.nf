@@ -8,6 +8,8 @@ include { QC } from './modules/qc.nf'
 include { SALMISO } from './modules/salmiso.nf'
 include { ECOLIISO } from './modules/ecoliiso.nf'
 include { CAMPISO } from './modules/campiso.nf'
+include { HAVISO } from './modules/haviso.nf'
+
 
 
 def parseJson(input_file){
@@ -336,7 +338,10 @@ workflow {
     else if(data.payLoad.assembly){
       data.payLoad.entrypoint = "assemblies"
     }
-  
+    else if(data.payLoad.sequences){
+      data.payLoad.entrypoint = "sequences"
+      data.payLoad.flags = it.value?.flags ?: ""
+    }
   return(data)
 }
 
@@ -349,9 +354,11 @@ b = a.branch{i ->
       return i 
     assemblies: i.payLoad.entrypoint == "assemblies" 
       return i
+    sequences: i.payLoad.entrypoint == "sequences"
+      return i
   } 
 
-b.reads.view()
+b.sequences.view()
 
 
   // Getting reads from accessions
@@ -463,6 +470,9 @@ b.reads.view()
   }
   )
 
+
+  
+
   // QC
   QC(ch_assemblies.filter{it -> it[5].contains("qc")})
 
@@ -470,7 +480,15 @@ b.reads.view()
   SALMISO(ch_assemblies.filter{it -> it[4] == "SALMISO"})
   ECOLIISO(ch_assemblies.filter{it -> it[4] == "ECOLIISO"})
   CAMPISO(ch_assemblies.filter{it -> it[4] == "CAMPISO"})
-
+  HAVISO(b.sequences.filter{it -> it.payLoad.organism == "HAVISO"}.map{it -> [
+      it.payLoad.sequences,
+      it.payLoad.flags,
+      it.payLoad.project,
+      it.payLoad.organism,
+      it.payLoad.key, 
+      it.payLoad.experiment_list]
+    }
+)
 
 }
 
