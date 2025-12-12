@@ -33,18 +33,3 @@ Analyses are triggered through signals, which are .json files which follow a def
     }
 }
 ```
-
-## Installation
-
-## Usage
-
-## Changelog
-0.2.0
-- PACBIO and ONT support
-- implementation of a downsampling step (based on genome length and target coverage)
-- critical update of the allele caller (chewBBACA, 3.2 -> 3.3.10)
-
-0.1.0
-- QC module (qc.nf)
-- support for experiments (processes can be executed only when a specific tag is present in the "experiment_list" field of the signal)
-- pathogen-specific workflows (proof of concept: workflow with ) 
