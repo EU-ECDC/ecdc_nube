@@ -112,7 +112,7 @@ for ref_seq_id in d_split_inp_seqs.keys():
                              ids_sequences_inp_fasta_matching_ref,
                              f"{args.outdir}/inp_seqs_matching_{ref_seq_id}.fasta")
     # if an alignment exists
-    if os.path.exists(f"{args.alignments_dir}/{ref_seq_id}_aligned.fasta") and ("regenerate" not in list_flags):
+    if os.path.isfile(f"{args.alignments_dir}/{ref_seq_id}_aligned.fasta") and ("regenerate" not in list_flags):
         if "force-align" in list_flags:
             # Removing sequences from existing alignment (due to force-align option)
             seqs_to_remove = d_split_inp_seqs[ref_seq_id]
