@@ -461,16 +461,27 @@ b.sequences.view()
   CG_MLST(ch_assemblies.filter{it -> it[5].contains("allele_call")}.map{
     project, accession, technology, assembly, organism, experiment_list ->
       [project, accession, technology, assembly, organism, experiment_list,
-      cgMLST_settings[organism].schemaPath, 
-      cgMLST_settings[organism].trnFile, 
-      cgMLST_settings[organism].geneList, 
-      cgMLST_settings[organism].containsKey("advOptions") ? cgMLST_settings[organism].advOptions.IONTORRENT.refAllelesErrorCorrection : "", 
+      cgMLST_settings[organism].schemaPath,
+      cgMLST_settings[organism].trnFile,
+      cgMLST_settings[organism].geneList,
+      cgMLST_settings[organism].containsKey("advOptions") ? cgMLST_settings[organism].advOptions.IONTORRENT.refAllelesErrorCorrection : "",
       cgMLST_settings[organism].containsKey("advOptions") ? cgMLST_settings[organism].advOptions : [:]
       ]
   }
   )
 
-
+  // Generating cgMLST profiles with plasmid scheme
+  CG_MLST(ch_assemblies.filter{it -> it[5].contains("allele_call_plasmid")}.map{
+    project, accession, technology, assembly, organism, experiment_list ->
+      [project, accession, technology, assembly, organism, experiment_list,
+      cgMLST_settings[organism]["plasmidScheme"].schemaPath,
+      cgMLST_settings[organism]["plasmidScheme"].trnFile,
+      cgMLST_settings[organism]["plasmidScheme"].geneList,
+      cgMLST_settings[organism]["plasmidScheme"].containsKey("advOptions") ? cgMLST_settings[organism].advOptions.IONTORRENT.refAllelesErrorCorrection : "",
+      cgMLST_settings[organism]["plasmidScheme"].containsKey("advOptions") ? cgMLST_settings[organism].advOptions : [:]
+      ]
+  }
+  )
   
 
   // QC
