@@ -11,6 +11,8 @@ include { CAMPISO } from './modules/campiso.nf'
 include { HAVISO } from './modules/haviso.nf'
 include { POLIISO } from './modules/poliiso.nf'
 
+include { CG_MLST as CG_MLST } from './modules/cgmlst.nf'
+include { CG_MLST as CG_MLST_PLASMID } from './modules/cgmlst.nf'
 
 def parseJson(input_file){
   def jsonSlurper = new JsonSlurper()
@@ -130,7 +132,7 @@ process ASSEMBLE {
 
   tag {"${project}:${accession}"}
 
-  publishDir "az://iob/${project}/assemblies/", overwrite: true
+  publishDir "${params.output}/${project}/assemblies/", overwrite: true
 
   output:
   tuple val(project), val(accession), val(technology), path("${accession}.fasta"), val(organism), val(experiment_list)
@@ -175,51 +177,7 @@ process ASSEMBLE {
       """
     } 
   }
-
 }
-
-process CG_MLST {
-  container "${params.containerRepository}/ejfresch/chewbbaca:3.3.10"
-  errorStrategy 'ignore'
-  time '30m'
-
-  input:
-    tuple val(project), val(accession), val(technology), path(assembly), val(organism), val(experiment_list), path(schema_path), path(trn_file), path(gene_list), path(fasta_ref_seqs_alleles), val(advOptions)
-
-  tag {"${project}:${accession}"}
-
-  publishDir "az://iob/${project}/cgMLST/", overwrite: true
-
-  output:
-    path "*_cgMLST.tsv", emit: tsv_chewbbaca
-
-  script:
-  if(technology == "ILLUMINA"){
-    def advOpt_illumina = advOptions.containsKey("ILLUMINA") ? advOptions.ILLUMINA : "None" 
-    """
-    generate_cgMLST_profiles.py -i ${assembly} -a ${accession} -g ${schema_path} -p ${trn_file} -gl ${gene_list} -ao "${advOpt_illumina}"
-    """
-  } else if(technology == "IONTORRENT"){
-    def advOpt_iontorrent = advOptions.containsKey("IONTORRENT") ? advOptions.IONTORRENT : "None"
-    def advOpt_chewBBACA = advOpt_iontorrent.chewBBACA
-    """
-    iontorrent_error_correction.py ${assembly} ${fasta_ref_seqs_alleles} corrected_assembly.fasta
-    generate_cgMLST_profiles.py -i corrected_assembly.fasta -a ${accession} -g ${schema_path} -p ${trn_file} -gl ${gene_list} -ao "${advOpt_chewBBACA}"    
-    """
-  } else if(technology == "ONT"){
-    def advOpt_ont = advOptions.containsKey("ONT") ? advOptions.ONT : "None"
-    """
-    generate_cgMLST_profiles.py -i ${assembly} -a ${accession} -g ${schema_path} -p ${trn_file} -gl ${gene_list} -ao "${advOpt_ont}"
-    """
-  } else if(technology == "PACBIO"){
-    def advOpt_pacbio = advOptions.containsKey("PACBIO") ? advOptions.PACBIO : "None"
-    """
-    generate_cgMLST_profiles.py -i ${assembly} -a ${accession} -g ${schema_path} -p ${trn_file} -gl ${gene_list} -ao "${advOpt_pacbio}"
-    """
-  }
-
-}
-
 
 process KLEBORATE {
   container "${params.containerRepository}/ejfresch/kleborate:1.0"
@@ -230,7 +188,7 @@ process KLEBORATE {
 
   tag {"${project}:${accession}"}
 
-  publishDir "az://iob/${project}/amr/", overwrite: true
+  publishDir "${params.output}/${project}/amr/", overwrite: true
 
   output:
   path "*.txt", emit: txt_kleborate
@@ -251,7 +209,7 @@ process RESFINDER {
 
   tag {"${project}:${accession}"}
 
-  publishDir "az://iob/${project}/amr/", overwrite: true
+  publishDir "${params.output}/${project}/amr/", overwrite: true
 
   output:
   path "*.json", emit: json_resfinder
@@ -465,20 +423,22 @@ b.sequences.view()
       cgMLST_settings[organism].trnFile,
       cgMLST_settings[organism].geneList,
       cgMLST_settings[organism].containsKey("advOptions") ? cgMLST_settings[organism].advOptions.IONTORRENT.refAllelesErrorCorrection : "",
-      cgMLST_settings[organism].containsKey("advOptions") ? cgMLST_settings[organism].advOptions : [:]
+      cgMLST_settings[organism].containsKey("advOptions") ? cgMLST_settings[organism].advOptions : [:],
+      accession
       ]
   }
   )
-
+  
   // Generating cgMLST profiles with plasmid scheme
-  CG_MLST(ch_assemblies.filter{it -> it[5].contains("allele_call_plasmid")}.map{
+  CG_MLST_PLASMID(ch_assemblies.filter{it -> it[5].contains("allele_call_plasmid")}.map{
     project, accession, technology, assembly, organism, experiment_list ->
       [project, accession, technology, assembly, organism, experiment_list,
       cgMLST_settings[organism]["plasmidScheme"].schemaPath,
       cgMLST_settings[organism]["plasmidScheme"].trnFile,
       cgMLST_settings[organism]["plasmidScheme"].geneList,
       cgMLST_settings[organism]["plasmidScheme"].containsKey("advOptions") ? cgMLST_settings[organism].advOptions.IONTORRENT.refAllelesErrorCorrection : "",
-      cgMLST_settings[organism]["plasmidScheme"].containsKey("advOptions") ? cgMLST_settings[organism].advOptions : [:]
+      cgMLST_settings[organism]["plasmidScheme"].containsKey("advOptions") ? cgMLST_settings[organism].advOptions : [:],
+      "${accession}_plasmid"
       ]
   }
   )
@@ -551,3 +511,4 @@ workflow.onError{
   proc.waitForProcessOutput()
 
 }
+
