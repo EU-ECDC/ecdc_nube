@@ -1,0 +1,51 @@
+{
+    "LISTISO":{
+        "genomeSize": "3Mb"
+    },
+    "KLEBISO":{
+        "genomeSize": "5.6Mb"
+    },
+    "CAMPISO":{
+        "genomeSize": "1.7Mb"
+    },
+    "PROVISO":{
+        "genomeSize": "4.55Mb"
+    },
+    "YERSISO":{
+        "genomeSize": "4.65Mb"
+    },
+    "YERSENT":{
+        "genomeSize": "4.65Mb"
+    },
+    "DIPHISO": {
+        "genomeSize": "2.48Mb"
+    },
+    "MENIISO":{
+        "genomeSize": "2.07Mb"
+    },
+    "SALMISO":{
+        "genomeSize": "4.8Mb"
+    },
+    "MYCOISO":{
+        "genomeSize": "4.4Mb"
+    },
+    "PSEUDISO":{
+        "genomeSize": "6.7Mb"
+    },
+    "CDIFFISO":{
+        "genomeSize": "4.2Mb"
+    },
+    "ECOLIISO": {
+        "genomeSize": "5.15Mb"
+    },
+    "LEGIISO": {
+        "genomeSize": "3.5Mb"
+    },
+    "ABAUMISO":{
+        "genomeSize": "4Mb"
+    },
+    "ENTERISO":{
+        "genomeSize": "4.9Mb"
+    }
+}
+
