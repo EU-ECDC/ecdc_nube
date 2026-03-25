@@ -21,6 +21,8 @@ parser.add_argument("-gl", "--gene_list", type=str,
                     help="Path to a file with the list of genes/loci to perform allele calling", required=True)
 parser.add_argument("-ao", "--adv_options", type=str,
                     help="Advanced options", required=True)
+parser.add_argument("-f", "--prefix", type=str,
+                    help="Output file prefix", required=False)
 args = parser.parse_args()
 
 random_tag = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
@@ -55,7 +57,11 @@ files_hashed_profiles = glob.glob("results_*/results_alleles_hashed.tsv")
 if files_hashed_profiles and len(files_hashed_profiles) == 1:
     target_file = glob.glob("results_*/results_alleles_hashed.tsv")[0]
     with open(target_file,"r") as tf:
-        with open(f"{args.accession}_cgMLST.tsv","w") as outf:
+        if args.prefix:
+            output_prefix = args.prefix
+        else:
+            output_prefix = args.accession
+        with open(f"{output_prefix}_cgMLST.tsv","w") as outf:
             for line in tf:
                 if line.startswith(f"{random_tag}\t"):
                     outf.write(re.sub(rf"^{random_tag}", f"{args.accession}", line))
