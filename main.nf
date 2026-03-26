@@ -271,7 +271,7 @@ process SPECIES_VERIFICATION {
 
   tag {"${project}:${accession}"}
 
-  publishDir "az://iob/${project}/species_verification/", overwrite: true
+  publishDir "${params.output}/${project}/species_verification/", overwrite: true
 
   output:
   tuple val(project), val(accession), val(organism), val(experiment_list), path("${accession}_species.tsv")
