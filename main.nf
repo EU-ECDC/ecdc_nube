@@ -262,6 +262,28 @@ process RESFINDER {
   """
 }
 
+process SPECIES_VERIFICATION {
+  container "docker.io/ejfresch/fastani:1.34"
+  errorStrategy 'ignore'
+
+  input:
+  tuple val(project), val(accession), path(assembly), val(organism), val(experiment_list), path(references_path)
+
+  tag {"${project}:${accession}"}
+
+  publishDir "az://iob/${project}/species_verification/", overwrite: true
+
+  output:
+  tuple val(project), val(accession), val(organism), val(experiment_list), path("${accession}_species.tsv")
+
+  shell:
+  """
+  ls -1 refseq_species/*.fna > list_ref_genomes.txt
+  fastANI -q ${accession}.fasta --rl list_ref_genomes.txt -o fastani_out.txt
+  parse_fastani.py -in ${accession}.fasta --data_summary refseq_species/data_summary.tsv
+  """
+}
+
 workflow {
 
   target="data/signals/*"
@@ -475,6 +497,14 @@ b.sequences.view()
 
   // QC
   QC(ch_assemblies.filter{it -> it[5].contains("qc")})
+
+  // Species verification
+  SPECIES_VERIFICATION(ch_assemblies.filter{ project, accession, technology, assembly, organism, experiment_list -> 
+    experiment_list.contains("species_verification")
+    }.map{project, accession, technology, assembly, organism, experiment_list ->
+      [project, accession, assembly, organism, experiment_list, "az://iob/${organism}/refseq_species/"]
+    }
+  )
 
   // Pathogen-specific sub-workflows
   SALMISO(ch_assemblies.filter{it -> it[4] == "SALMISO"})
