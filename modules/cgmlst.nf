@@ -17,8 +17,7 @@ process CG_MLST {
   if(technology == "ILLUMINA"){
     def advOpt_illumina = advOptions.containsKey("ILLUMINA") ? advOptions.ILLUMINA : "None" 
     """
-    echo generate_cgMLST_profiles.py -i ${assembly} -a ${accession} -g ${schema_path} -p ${trn_file} -gl ${gene_list} -ao "${advOpt_illumina}" -f ${prefix}
-    touch ${prefix}_cgMLST.tsv
+    generate_cgMLST_profiles.py -i ${assembly} -a ${accession} -g ${schema_path} -p ${trn_file} -gl ${gene_list} -ao "${advOpt_illumina}" -f ${prefix}
     """
   } else if(technology == "IONTORRENT"){
     def advOpt_iontorrent = advOptions.containsKey("IONTORRENT") ? advOptions.IONTORRENT : "None"
