@@ -8,7 +8,7 @@ process AMRFINDER {
 
   tag {"${project}:${accession}"}
 
-  publishDir "az://iob/${project}/amr/", overwrite: true
+  publishDir "${params.output}/${project}/amr/", overwrite: true
 
   output:
   tuple val(project), val(accession), path("${accession}_amrfinder.tsv"), val(organism), val(experiment_list)
