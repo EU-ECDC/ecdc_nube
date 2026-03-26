@@ -9,7 +9,7 @@ process QUAST {
 
   tag {"${project}:${accession}"}
 
-  publishDir "az://iob/${project}/qc/", overwrite: true
+  publishDir "${params.output}/${project}/qc/", overwrite: true
 
   output:
   tuple val(project), val(accession), path("${accession}_quast.tsv", arity: '1..*'), val(organism), val(experiment_list)
