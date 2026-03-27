@@ -15,18 +15,18 @@ tab_r = pd.read_csv("fastani_out.txt", sep="\t", header = None)
 tab_r.columns = ["in","ref","ani","orthologous_matches","total_fragments"]
 isolate_key = tab_r["in"][0].split("/")[-1].replace(".fasta","")
 
-# Reshape the reference entries
+# Reshape the ref entries
 tab_r["ref"] = [i.split("/")[-1].replace(".fna","") for i in tab_r["ref"].tolist()]
 
 # Load the data on the species
 tab_s = pd.read_csv(args.data_summary, sep="\t")
 d_sci_names = dict(zip(tab_s["Assembly Accession"].tolist(), tab_s["Organism Scientific Name"].tolist()))
 
-# Define the column species in tab_r
+# I define the column species in tab_r
 tab_r["species"] = [d_sci_names[i] for i in tab_r["ref"].tolist()]
 tab_r["query"] = isolate_key
 
-# Filtering hits based on threshold
+# Number of matches above the threshold
 #threshold = 95
 #tab_matches = tab_r.query('ani > @threshold')
 
