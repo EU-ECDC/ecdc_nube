@@ -502,7 +502,7 @@ b.sequences.view()
   SPECIES_VERIFICATION(ch_assemblies.filter{ project, accession, technology, assembly, organism, experiment_list -> 
     experiment_list.contains("species_verification")
     }.map{project, accession, technology, assembly, organism, experiment_list ->
-      [project, accession, assembly, organism, experiment_list, "az://iob/${organism}/refseq_species/"]
+      [project, accession, assembly, organism, experiment_list, "${params.speciesReferences}/${organism}/"]
     }
   )
 
