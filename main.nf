@@ -278,9 +278,9 @@ process SPECIES_VERIFICATION {
 
   shell:
   """
-  ls -1 refseq_species/*.fna > list_ref_genomes.txt
+  ls -1 ${organism}/*.fna > list_ref_genomes.txt
   fastANI -q ${accession}.fasta --rl list_ref_genomes.txt -o fastani_out.txt
-  parse_fastani.py -in ${accession}.fasta --data_summary refseq_species/data_summary.tsv
+  parse_fastani.py -in ${accession}.fasta --data_summary ${organism}/data_summary.tsv
   """
 }
 
