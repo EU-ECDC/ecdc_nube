@@ -41,17 +41,6 @@
                 "chewBBACA":"--minimum-length 0 --bsr 0.6 --force-continue",
                 "refAllelesErrorCorrection":"/path/to/schemas/KLEBISO-Ridom-1/ref_alleles_iontorrent_error_correction_KLEBISO.fasta"
             }
-        },
-        "plasmidScheme": {
-            "schemaPath":"/path/to/schemas/KLEBISO-plasmid-IncHI1B-1/",
-            "trnFile":"/path/to/schemas/KLEBISO-plasmid-IncHI1B-1/Klebsiella.trn",
-            "geneList":"/path/to/schemas/KLEBISO-plasmid-IncHI1B-1/list_loci_cgMLST_KLEBISO.txt",
-            "advOptions":{
-                "IONTORRENT": {
-                    "chewBBACA":"--minimum-length 0 --bsr 0.6 --force-continue",
-                    "refAllelesErrorCorrection":"/path/to/schemas/KLEBISO-plasmid-IncHI1B-1/ref_alleles_iontorrent_error_correction_KLEBISO.fasta"
-                }
-            }
         }
     },
     "MYCOISO": {
@@ -154,14 +143,25 @@
         }
     },
     "ENTERISO": {
-            "schemaPath":"/path/to/schemas/ENTERISO-Ridom-1/",
-            "trnFile":"/path/to/schemas/ENTERISO-Ridom-1/Enterobacter_hormaechei.trn",
-            "geneList":"/path/to/schemas/ENTERISO-Ridom-1/list_loci_cgMLST_ENTERISO.txt",
-            "advOptions":{
-                "IONTORRENT": {
-                    "chewBBACA":"--minimum-length 0 --bsr 0.6 --force-continue",
-                    "refAllelesErrorCorrection":"/path/to/schemas/ENTERISO-Ridom-1/ref_alleles_iontorrent_error_correction_ENTERISO.fasta"
-                }
+        "schemaPath":"/path/to/schemas/ENTERISO-Ridom-1/",
+        "trnFile":"/path/to/schemas/ENTERISO-Ridom-1/Enterobacter_hormaechei.trn",
+        "geneList":"/path/to/schemas/ENTERISO-Ridom-1/list_loci_cgMLST_ENTERISO.txt",
+        "advOptions":{
+            "IONTORRENT": {
+                "chewBBACA":"--minimum-length 0 --bsr 0.6 --force-continue",
+                "refAllelesErrorCorrection":"/path/to/schemas/ENTERISO-Ridom-1/ref_alleles_iontorrent_error_correction_ENTERISO.fasta"
             }
-        }      
+        }
+    },
+    "IncHI1B_pNDM-MAR": {
+        "schemaPath":"/path/to/schemas/Plasmid/plasmid-IncHI1B-1/",
+        "trnFile":"/path/to/schemas/Plasmid/plasmid-IncHI1B-1/IncHI1B.trn",
+        "geneList":"/path/to/schemas/Plasmid/plasmid-IncHI1B-1/list_loci_IncHI1B_cgMLST.txt",
+        "advOptions":{
+            "IONTORRENT": {
+                "chewBBACA":"--minimum-length 0 --bsr 0.6 --force-continue",
+                "refAllelesErrorCorrection":"/path/to/schemas/Plasmid/plasmid-IncHI1B-1/ref_alleles_iontorrent_error_correction.fasta"
+            }
+        }
+    }
 }
