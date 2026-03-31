@@ -60,8 +60,8 @@ if files_hashed_profiles and len(files_hashed_profiles) == 1:
         if args.prefix:
             output_prefix = args.prefix
         else:
-            output_prefix = args.accession
-        with open(f"{output_prefix}_cgMLST.tsv","w") as outf:
+            output_prefix =  f"{args.accession}_cgMLST"
+        with open(f"{output_prefix}.tsv","w") as outf:
             for line in tf:
                 if line.startswith(f"{random_tag}\t"):
                     outf.write(re.sub(rf"^{random_tag}", f"{args.accession}", line))
