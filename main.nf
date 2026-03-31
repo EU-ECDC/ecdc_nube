@@ -10,9 +10,7 @@ include { ECOLIISO } from './modules/ecoliiso.nf'
 include { CAMPISO } from './modules/campiso.nf'
 include { HAVISO } from './modules/haviso.nf'
 include { POLIISO } from './modules/poliiso.nf'
-
-include { CG_MLST as CG_MLST } from './modules/cgmlst.nf'
-include { CG_MLST as CG_MLST_PLASMID } from './modules/cgmlst.nf'
+include { CG_MLST } from './modules/cgmlst.nf'
 
 def parseJson(input_file){
   def jsonSlurper = new JsonSlurper()
@@ -424,26 +422,11 @@ b.sequences.view()
       cgMLST_settings[organism].geneList,
       cgMLST_settings[organism].containsKey("advOptions") ? cgMLST_settings[organism].advOptions.IONTORRENT.refAllelesErrorCorrection : "",
       cgMLST_settings[organism].containsKey("advOptions") ? cgMLST_settings[organism].advOptions : [:],
-      accession
+      "${accession}_cgMLST"
       ]
-  }
+    }
   )
   
-  // Generating cgMLST profiles with plasmid scheme
-  CG_MLST_PLASMID(ch_assemblies.filter{it -> it[5].contains("allele_call_plasmid")}.map{
-    project, accession, technology, assembly, organism, experiment_list ->
-      [project, accession, technology, assembly, organism, experiment_list,
-      cgMLST_settings[organism]["plasmidScheme"].schemaPath,
-      cgMLST_settings[organism]["plasmidScheme"].trnFile,
-      cgMLST_settings[organism]["plasmidScheme"].geneList,
-      cgMLST_settings[organism]["plasmidScheme"].containsKey("advOptions") ? cgMLST_settings[organism].advOptions.IONTORRENT.refAllelesErrorCorrection : "",
-      cgMLST_settings[organism]["plasmidScheme"].containsKey("advOptions") ? cgMLST_settings[organism].advOptions : [:],
-      "${accession}_plasmid"
-      ]
-  }
-  )
-  
-
   // QC
   QC(ch_assemblies.filter{it -> it[5].contains("qc")})
 
