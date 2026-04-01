@@ -1,17 +1,17 @@
-process CG_MLST {
+process ALLELE_CALL {
   container "${params.containerRepository}/ejfresch/chewbbaca:3.3.10"
   errorStrategy 'terminate'
   time '30m'
 
   input:
-    tuple val(project), val(accession), val(technology), path(assembly), val(organism), val(experiment_list), path(schema_path), path(trn_file), path(gene_list), path(fasta_ref_seqs_alleles), val(advOptions), val(prefix)
+    tuple val(project), val(accession), val(technology), path(assembly), val(organism), val(experiment_list), path(schema_path), path(trn_file), path(gene_list), path(fasta_ref_seqs_alleles), val(advOptions), val(prefix), val(schema)
 
-  tag {"${project}:${accession}"}
+  tag {"${project}:${accession}:${schema}"}
 
-  publishDir "${params.output}/${project}/cgMLST/", overwrite: true
+  publishDir "${params.output}/${project}/allele_call/${schema}/", overwrite: true
 
   output:
-    path "*_cgMLST.tsv", emit: tsv_chewbbaca
+    path "*.tsv", emit: tsv_chewbbaca
 
   script:
   if(technology == "ILLUMINA"){
