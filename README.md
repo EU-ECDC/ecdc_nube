@@ -37,4 +37,4 @@ Analyses are triggered through signals, which are .json files which follow a def
 }
 ```
 
-The `schemas` input is optional and may include the name of one or more schemas to use in allele calling to use instead of the default schema for the organism.
+The `schemas` input is optional and may include the name of one or more schemas to use in allele calling instead of the default schema for the organism.
