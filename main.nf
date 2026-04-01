@@ -10,7 +10,7 @@ include { ECOLIISO } from './modules/ecoliiso.nf'
 include { CAMPISO } from './modules/campiso.nf'
 include { HAVISO } from './modules/haviso.nf'
 include { POLIISO } from './modules/poliiso.nf'
-include { ALLELE_CALL } from './modules/cgmlst.nf'
+include { ALLELE_CALL } from './modules/allelecall.nf'
 
 def parseJson(input_file){
   def jsonSlurper = new JsonSlurper()
