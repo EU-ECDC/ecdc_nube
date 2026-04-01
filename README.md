@@ -24,6 +24,9 @@ Analyses are triggered through signals, which are .json files which follow a def
             "allele_call",
             "qc"
         ],
+        "schemas": [
+            "IncHI1B_pNDM-MAR"
+        ],
         "reads": [
             [
                 "S3|ecdc-epc-prod/LEGIISO/FR/025171512401_S11_R1.fastq.gz",
@@ -33,3 +36,5 @@ Analyses are triggered through signals, which are .json files which follow a def
     }
 }
 ```
+
+The `schemas` input is optional and may include the name of one or more schemas to use in allele calling to use instead of the default schema for the organism.
