@@ -52,6 +52,12 @@ def extract_sequences_by_ids(fasta_path, id_list, output_path):
             if write:
                 outfile.write(line)
 
+def count_new_sequences(input_fasta, existing_alignment):
+    input_ids = set(extract_ids_from_fasta(input_fasta))
+    existing_ids = set(extract_ids_from_fasta(existing_alignment))
+    return len(input_ids - existing_ids)
+
+
 # Creates a db for the references if it does not exist
 rname = os.path.basename(args.ref).split(".")[0]
 name_db = rname + "_db"
@@ -137,16 +143,28 @@ for ref_seq_id in d_split_inp_seqs.keys():
             sp.run(cmd_alignment, check=True, capture_output=False, text=True)
             
         else:
-            # I perform the alignment
-            logging.info(f"Generating the sequence alignment")
-            cmd_alignment = ["augur", "align", 
-                "--sequences", f"{args.outdir}/inp_seqs_matching_{ref_seq_id}.fasta",
-                "--existing-alignment", f"{args.alignments_dir}/{ref_seq_id}_aligned.fasta",
-                "--debug",
-                "--output", f"{args.outdir}/{ref_seq_id}_aligned.fasta"
+            inp_fasta = f"{args.outdir}/inp_seqs_matching_{ref_seq_id}.fasta"
+            existing_ali = f"{args.alignments_dir}/{ref_seq_id}_aligned.fasta"
+            out_ali = f"{args.outdir}/{ref_seq_id}_aligned.fasta"
+
+            n_new = count_new_sequences(inp_fasta, existing_ali)
+
+            if n_new == 0:
+                logging.info(
+                    f"No new sequences to add for {ref_seq_id}; "
+                    f"Reusing existing alignment"
+                )
+                sp.run(["cp", existing_ali, out_ali], check=True)
+            else:
+                logging.info(f"Generating the sequence alignment ({n_new} new sequences)")
+                cmd_alignment = ["augur", "align",
+                    "--sequences", inp_fasta,
+                    "--existing-alignment", existing_ali,
+                    "--debug",
+                    "--output", out_ali
                 ]
-            print(" ".join(cmd_alignment))
-            sp.run(cmd_alignment, check=True, capture_output=False, text=True)
+                print(" ".join(cmd_alignment))
+                sp.run(cmd_alignment, check=True, capture_output=False, text=True)
 
     # if there is no alignment or there is the flag "regenerate": 
     else:

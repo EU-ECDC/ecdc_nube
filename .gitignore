@@ -1,0 +1,11 @@
+*.pyc
+__pycache__
+.DS_Store
+.nextflow*
+.parallel/
+.bash_history
+testing/
+work/
+data/
+misc/
+results/

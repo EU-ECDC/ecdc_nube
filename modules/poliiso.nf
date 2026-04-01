@@ -9,7 +9,7 @@ process SEQ_ALIGN_PHYLOGENY{
   output:
   tuple path("alignments/*_aligned.fasta", arity: '1..*'), path("dist_matrices/*.tsv", arity: '1..*'), path("trees/*.treefile", arity: '0..*') 
 
-  publishDir "az://iob/${project}/", overwrite: true
+  publishDir "${params.output}/${project}/", overwrite: true
 
   tag {"${project}:${batch_id}"}
 

@@ -1,0 +1,231 @@
+{
+    "organism": {
+        "ABAUMISO":{
+            "genomeSize": "4Mb",
+            "defaultSchemas": ["ABAUMISO-PubMLST-3"]
+        },
+        "CAMPISO":{
+            "genomeSize": "1.7Mb",
+            "defaultSchemas": ["CAMPISO-PubMLST-8"]
+        },
+        "CDIFFISO":{
+            "genomeSize": "4.2Mb",
+            "defaultSchemas": ["CDIFFISO-Ridom-1"]
+        },
+        "DIPHISO": {
+            "genomeSize": "2.48Mb",
+            "defaultSchemas": ["DIPHISO-BIGSdb-1"]
+        },
+        "ECOLIISO": {
+            "genomeSize": "5.15Mb",
+            "defaultSchemas": ["ECOLIISO-ChewieNS-1"]
+        },
+        "ENTERISO":{
+            "genomeSize": "4.9Mb",
+            "defaultSchemas": ["ENTERISO-Ridom-1"]
+        },
+        "KLEBISO":{
+            "genomeSize": "5.6Mb",
+            "defaultSchemas": ["KLEBISO-Ridom-1"]
+        },
+        "LEGIISO": {
+            "genomeSize": "3.5Mb",
+            "defaultSchemas": ["LEGIISO-Ridom-1"]
+        },
+        "LISTISO":{
+            "genomeSize": "3Mb",
+            "defaultSchemas": ["LISTISO-ChewieNS-1"]
+        },
+        "MENIISO":{
+            "genomeSize": "2.07Mb",
+            "defaultSchemas": [""]
+        },
+        "MYCOISO":{
+            "genomeSize": "4.4Mb",
+            "defaultSchemas": ["MYCOISO-Ridom-1"]
+        },
+        "PROVISO":{
+            "genomeSize": "4.55Mb",
+            "defaultSchemas": ["PROVISO-Custom-1"]
+        },
+        "PSEUDISO":{
+            "genomeSize": "6.7Mb",
+            "defaultSchemas": [""]
+        },
+        "SALMISO":{
+            "genomeSize": "4.8Mb",
+            "defaultSchemas": ["SALMISO-ChewieNS-1"]
+        },
+        "YERSISO":{
+            "genomeSize": "4.65Mb",
+            "defaultSchemas": ["YERSISO-BIGSdb-1"]
+        }
+    },
+    "schemas": {
+        "ABAUMISO-PubMLST-3": {
+            "schemaPath":"/path/to/schemas/ABAUMISO-PubMLST-3/",
+            "trnFile":"/path/to/schemas/ABAUMISO-PubMLST-3/Acinetobacter_baumannii.trn",
+            "geneList":"/path/to/schemas/ABAUMISO-PubMLST-3/list_loci_cgMLST_ABAUMISO.txt",
+            "advOptions":{
+                "IONTORRENT": {
+                    "chewBBACA":"--minimum-length 0 --bsr 0.6 --force-continue",
+                    "refAllelesErrorCorrection":"/path/to/schemas/ABAUMISO-PubMLST-3/ref_alleles_iontorrent_error_correction_ABAUMISO.fasta"
+                }
+            }
+        },
+        "CAMPISO-PubMLST-8": {
+            "schemaPath":"/path/to/schemas/CAMPISO-PubMLST-8/",
+            "trnFile":"/path/to/schemas/CAMPISO-PubMLST-8/Campylobacter_jejuni_coli.trn",
+            "geneList":"/path/to/schemas/CAMPISO-PubMLST-8/list_loci_cgMLST_CAMPISO.txt",
+            "advOptions":{
+                "IONTORRENT": {
+                    "chewBBACA":"--minimum-length 0 --bsr 0.6 --force-continue",
+                    "refAllelesErrorCorrection":"/path/to/schemas/CAMPISO-PubMLST-8/ref_alleles_iontorrent_error_correction_CAMPISO.fasta"
+                }
+            }
+        },
+        "CDIFFISO-Ridom-1": {
+            "schemaPath":"/path/to/schemas/CDIFFISO-Ridom-1/",
+            "trnFile":"/path/to/schemas/CDIFFISO-Ridom-1/clostridioides_difficile.trn",
+            "geneList":"/path/to/schemas/CDIFFISO-Ridom-1/list_genes_cgMLST_CDIFFISO.tsv",
+            "advOptions":{
+                "IONTORRENT": {
+                    "chewBBACA":"--minimum-length 0 --bsr 0.6 --force-continue",
+                    "refAllelesErrorCorrection":"/path/to/schemas/CDIFFISO-Ridom-1/ref_alleles_iontorrent_error_correction_CDIFFISO.fasta"
+                }
+            }
+        },
+        "DIPHISO-BIGSdb-1": {
+            "schemaPath":"/path/to/schemas/DIPHISO-BIGSdb-1/",
+            "trnFile":"/path/to/schemas/DIPHISO-BIGSdb-1/Corynebacterium_diphtheriae.trn",
+            "geneList":"/path/to/schemas/DIPHISO-BIGSdb-1/list_loci_cgMLST_DIPHISO.txt",
+            "advOptions":{
+                "IONTORRENT": {
+                    "chewBBACA":"--minimum-length 0 --bsr 0.6 --force-continue",
+                    "refAllelesErrorCorrection":"/path/to/schemas/DIPHISO-BIGSdb-1/ref_alleles_iontorrent_error_correction_DIPHISO.fasta"
+                }
+            }
+        },
+        "ECOLIISO-ChewieNS-1": {
+            "schemaPath":"/path/to/schemas/ECOLIISO-ChewieNS-1/",
+            "trnFile":"/path/to/schemas/ECOLIISO-ChewieNS-1/Escherichia_coli.trn",
+            "geneList":"/path/to/schemas/ECOLIISO-ChewieNS-1/list_loci_cgMLST_ECOLIISO.txt",
+            "advOptions":{
+                "IONTORRENT": {
+                    "chewBBACA":"--minimum-length 0 --bsr 0.6 --force-continue",
+                    "refAllelesErrorCorrection":"/path/to/schemas/ECOLIISO-ChewieNS-1/ref_alleles_iontorrent_error_correction_ECOLIISO.fasta"
+                }
+            }
+        },
+        "ENTERISO-Ridom-1": {
+                "schemaPath":"/path/to/schemas/ENTERISO-Ridom-1/",
+                "trnFile":"/path/to/schemas/ENTERISO-Ridom-1/Enterobacter_hormaechei.trn",
+                "geneList":"/path/to/schemas/ENTERISO-Ridom-1/list_loci_cgMLST_ENTERISO.txt",
+                "advOptions":{
+                    "IONTORRENT": {
+                        "chewBBACA":"--minimum-length 0 --bsr 0.6 --force-continue",
+                        "refAllelesErrorCorrection":"/path/to/schemas/ENTERISO-Ridom-1/ref_alleles_iontorrent_error_correction_ENTERISO.fasta"
+                }
+            }
+        },
+        "IncHI1B_pNDM-MAR": {
+            "schemaPath":"/path/to/schemas/Plasmid/plasmid-IncHI1B-1/",
+            "trnFile":"/path/to/schemas/Plasmid/plasmid-IncHI1B-1/IncHI1B.trn",
+            "geneList":"/path/to/schemas/Plasmid/plasmid-IncHI1B-1/list_loci_IncHI1B_cgMLST.txt",
+            "advOptions":{
+                "IONTORRENT": {
+                    "chewBBACA":"--minimum-length 0 --bsr 0.6 --force-continue",
+                    "refAllelesErrorCorrection":"/path/to/schemas/Plasmid/plasmid-IncHI1B-1/ref_alleles_iontorrent_error_correction.fasta"
+                }
+            }
+        },
+        "KLEBISO-Ridom-1": {
+            "schemaPath":"/path/to/schemas/KLEBISO-Ridom-1/",
+            "trnFile":"/path/to/schemas/KLEBISO-Ridom-1/Klebsiella.trn",
+            "geneList":"/path/to/schemas/KLEBISO-Ridom-1/list_loci_cgMLST_KLEBISO.txt",
+            "advOptions":{
+                "IONTORRENT": {
+                    "chewBBACA":"--minimum-length 0 --bsr 0.6 --force-continue",
+                    "refAllelesErrorCorrection":"/path/to/schemas/KLEBISO-Ridom-1/ref_alleles_iontorrent_error_correction_KLEBISO.fasta"
+                }
+            }
+        },
+        "LEGIISO-Ridom-1": {
+            "schemaPath":"/path/to/schemas/LEGIISO-Ridom-1/",
+            "trnFile":"/path/to/schemas/LEGIISO-Ridom-1/Legionella_pneumophila.trn",
+            "geneList":"/path/to/schemas/LEGIISO-Ridom-1/list_loci_cgMLST_LEGIISO.txt",
+            "advOptions":{
+                "IONTORRENT": {
+                    "chewBBACA":"--minimum-length 0 --bsr 0.6 --force-continue",
+                    "refAllelesErrorCorrection":"/path/to/schemas/LEGIISO-Ridom-1/ref_alleles_iontorrent_error_correction_LEGIISO.fasta"
+                }
+            }
+        },
+        "LISTISO-ChewieNS-1": {
+            "schemaPath":"/path/to/schemas/LISTISO-ChewieNS-1/",
+            "trnFile":"/path/to/schemas/LISTISO-ChewieNS-1/Listeria_monocytogenes.trn",
+            "geneList":"/path/to/schemas/LISTISO-ChewieNS-1/list_genes_cgMLST_LISTISO.tsv",
+            "advOptions":{
+                "IONTORRENT": {
+                    "chewBBACA":"--minimum-length 0 --bsr 0.6 --force-continue",
+                    "refAllelesErrorCorrection":"/path/to/schemas/LISTISO-ChewieNS-1/ref_alleles_iontorrent_error_correction_LISTISO.fasta"
+                }
+            }
+        },
+        "MYCOISO-Ridom-1": {
+            "schemaPath":"/path/to/schemas/MYCOISO-Ridom-1/",
+            "trnFile":"/path/to/schemas/MYCOISO-Ridom-1/Mycobacterium_tuberculosis_bovis_africanum_canettii.trn",
+            "geneList":"/path/to/schemas/MYCOISO-Ridom-1/list_genes_cgMLST_MYCOISO.tsv",
+            "advOptions":{
+                "IONTORRENT": {
+                    "chewBBACA":"--minimum-length 0 --bsr 0.6 --force-continue",
+                    "refAllelesErrorCorrection":"/path/to/schemas/MYCOISO-Ridom-1/ref_alleles_iontorrent_error_correction_MYCOISO.fasta"
+                }
+            }
+        },
+        "PROVISO-Custom-1": {
+            "schemaPath":"/path/to/schemas/PROVISO-Custom-1/",
+            "trnFile":"/path/to/schemas/PROVISO-Custom-1/Providencia_stuartii.trn",
+            "geneList":"/path/to/schemas/PROVISO-Custom-1/list_loci_cgMLST_PROVISO.txt",
+            "advOptions":{
+                "IONTORRENT": {
+                    "chewBBACA":"--minimum-length 0 --bsr 0.6 --force-continue",
+                    "refAllelesErrorCorrection":"/path/to/schemas/PROVISO-Custom-1/ref_alleles_iontorrent_error_correction_PROVISO.fasta"
+                }
+            }
+        },
+        "SALMISO-ChewieNS-1": {
+            "schemaPath":"/path/to/schemas/SALMISO-ChewieNS-1/",
+            "trnFile":"/path/to/schemas/SALMISO-ChewieNS-1/Salmonella_enterica.trn",
+            "geneList":"/path/to/schemas/SALMISO-ChewieNS-1/list_genes_cgMLST_SALMISO.tsv",
+            "advOptions":{
+                "IONTORRENT": {
+                    "chewBBACA":"--minimum-length 0 --st 0.01 --bsr 0.6 --force-continue",
+                    "refAllelesErrorCorrection":"/path/to/schemas/SALMISO-ChewieNS-1/ref_alleles_iontorrent_error_correction_SALMISO.fasta"
+                }
+            }
+        },
+        "YERSENT-BIGSdb-Pasteur": {
+            "schemaPath":"/path/to/schemas/YERSENT-BIGSdb-Pasteur/",
+            "trnFile":"/path/to/schemas/YERSENT-BIGSdb-Pasteur/Yersinia_enterocolitica.trn",
+            "geneList":"/path/to/schemas/YERSENT-BIGSdb-Pasteur/list_loci_cgMLST_YERSENT.txt",
+            "advOptions":{
+                "IONTORRENT": {
+                    "chewBBACA":"--minimum-length 0 --bsr 0.6 --force-continue",
+                    "refAllelesErrorCorrection":"/path/to/schemas/YERSENT-BIGSdb-Pasteur/ref_alleles_iontorrent_error_correction_YERSENT.fasta"
+                }
+            }
+        },
+        "YERSISO-BIGSdb-1": {
+            "schemaPath":"/path/to/schemas/YERSISO-BIGSdb-1/",
+            "trnFile":"/path/to/schemas/YERSISO-BIGSdb-1/Yersinia.trn",
+            "geneList":"/path/to/schemas/YERSISO-BIGSdb-1/list_loci_cgMLST_YERSISO.txt",
+            "advOptions":{
+                "IONTORRENT": {
+                    "chewBBACA":"--minimum-length 0 --bsr 0.6 --force-continue",
+                "refAllelesErrorCorrection":"/path/to/schemas/YERSISO-BIGSdb-1/ref_alleles_iontorrent_error_correction_YERSISO.fasta"
+                }
+            }
+        }
+    }
+}

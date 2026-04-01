@@ -10,7 +10,7 @@ include { ECOLIISO } from './modules/ecoliiso.nf'
 include { CAMPISO } from './modules/campiso.nf'
 include { HAVISO } from './modules/haviso.nf'
 include { POLIISO } from './modules/poliiso.nf'
-
+include { ALLELE_CALL } from './modules/allelecall.nf'
 
 def parseJson(input_file){
   def jsonSlurper = new JsonSlurper()
@@ -31,12 +31,12 @@ process PREFETCH {
   }
   
   input:
-    tuple val(project), val(accession), val(run_id), val(technology), val(organism), val(experiment_list)
+    tuple val(project), val(accession), val(run_id), val(technology), val(organism), val(experiment_list), val(schemas)
 
   tag {"${project}:${accession}"}
 
   output:
-    tuple val(project), val(accession), val(technology), path('*.fastq.gz', arity: '1..*'), val(organism), val(experiment_list)
+    tuple val(project), val(accession), val(technology), path('*.fastq.gz', arity: '1..*'), val(organism), val(experiment_list), val(schemas)
 
   shell:
   """
@@ -51,12 +51,12 @@ process COMBINE_FASTQ {
   time '30m'
 
   input:
-  tuple val(project), val(accession), val(technology), path(R1, arity: '1..*'), path(R2, arity: '1..*'), val(layout), val(organism), val(experiment_list)
+  tuple val(project), val(accession), val(technology), path(R1, arity: '1..*'), path(R2, arity: '1..*'), val(layout), val(organism), val(experiment_list), val(schemas)
 
   tag {"${project}:${accession}"}
 
   output:
-  tuple val(project), val(accession), val(technology), path("*-combined_?.fastq.gz", arity: '1..*'), val(layout), val(organism), val(experiment_list)
+  tuple val(project), val(accession), val(technology), path("*-combined_?.fastq.gz", arity: '1..*'), val(layout), val(organism), val(experiment_list), val(schemas)
  
   script:
   """
@@ -73,12 +73,12 @@ process TRIM {
   memory '12 GB'
 
   input:
-  tuple val(project), val(accession), val(technology), path(reads, arity: '1..*'), val(cardinality), val(organism), val(experiment_list), val(genome_size)
+  tuple val(project), val(accession), val(technology), path(reads, arity: '1..*'), val(cardinality), val(organism), val(experiment_list), val(genome_size), val(schemas)
 
   tag {"${project}:${accession}"}
 
   output:
-  tuple val(project), val(accession), val(technology), path("*-trimmed_?.fastq.gz", arity: '1..*'), val(cardinality), val(organism), val(experiment_list), val(genome_size)
+  tuple val(project), val(accession), val(technology), path("*-trimmed_?.fastq.gz", arity: '1..*'), val(cardinality), val(organism), val(experiment_list), val(genome_size), val(schemas)
  
   shell:
   if(cardinality == 1){
@@ -100,12 +100,12 @@ process DOWNSAMPLE {
   time '30m'
 
   input:
-  tuple val(project), val(accession), val(technology), path(reads, arity: '1..*'), val(cardinality), val(organism), val(experiment_list), val(genome_size)
+  tuple val(project), val(accession), val(technology), path(reads, arity: '1..*'), val(cardinality), val(organism), val(experiment_list), val(genome_size), val(schemas)
 
   tag {"${project}:${accession}"}
 
   output:
-  tuple val(project), val(accession), val(technology), path("*-downsampled_?.fastq.gz", arity: '1..*'), val(cardinality), val(organism), val(experiment_list)
+  tuple val(project), val(accession), val(technology), path("*-downsampled_?.fastq.gz", arity: '1..*'), val(cardinality), val(organism), val(experiment_list), val(schemas)
  
   shell:
   if(cardinality == 1){
@@ -126,14 +126,14 @@ process ASSEMBLE {
   //time '20h'
 
   input:
-  tuple val(project), val(accession), val(technology), path(read_set), val(cardinality), val(organism), val(experiment_list)
+  tuple val(project), val(accession), val(technology), path(read_set), val(cardinality), val(organism), val(experiment_list), val(schemas)
 
   tag {"${project}:${accession}"}
 
-  publishDir "az://iob/${project}/assemblies/", overwrite: true
+  publishDir "${params.output}/${project}/assemblies/", overwrite: true
 
   output:
-  tuple val(project), val(accession), val(technology), path("${accession}.fasta"), val(organism), val(experiment_list)
+  tuple val(project), val(accession), val(technology), path("${accession}.fasta"), val(organism), val(experiment_list), val(schemas)
 
   shell:
   if(technology == "ILLUMINA"){
@@ -175,51 +175,7 @@ process ASSEMBLE {
       """
     } 
   }
-
 }
-
-process CG_MLST {
-  container "${params.containerRepository}/ejfresch/chewbbaca:3.3.10"
-  errorStrategy 'ignore'
-  time '30m'
-
-  input:
-    tuple val(project), val(accession), val(technology), path(assembly), val(organism), val(experiment_list), path(schema_path), path(trn_file), path(gene_list), path(fasta_ref_seqs_alleles), val(advOptions)
-
-  tag {"${project}:${accession}"}
-
-  publishDir "az://iob/${project}/cgMLST/", overwrite: true
-
-  output:
-    path "*_cgMLST.tsv", emit: tsv_chewbbaca
-
-  script:
-  if(technology == "ILLUMINA"){
-    def advOpt_illumina = advOptions.containsKey("ILLUMINA") ? advOptions.ILLUMINA : "None" 
-    """
-    generate_cgMLST_profiles.py -i ${assembly} -a ${accession} -g ${schema_path} -p ${trn_file} -gl ${gene_list} -ao "${advOpt_illumina}"
-    """
-  } else if(technology == "IONTORRENT"){
-    def advOpt_iontorrent = advOptions.containsKey("IONTORRENT") ? advOptions.IONTORRENT : "None"
-    def advOpt_chewBBACA = advOpt_iontorrent.chewBBACA
-    """
-    iontorrent_error_correction.py ${assembly} ${fasta_ref_seqs_alleles} corrected_assembly.fasta
-    generate_cgMLST_profiles.py -i corrected_assembly.fasta -a ${accession} -g ${schema_path} -p ${trn_file} -gl ${gene_list} -ao "${advOpt_chewBBACA}"    
-    """
-  } else if(technology == "ONT"){
-    def advOpt_ont = advOptions.containsKey("ONT") ? advOptions.ONT : "None"
-    """
-    generate_cgMLST_profiles.py -i ${assembly} -a ${accession} -g ${schema_path} -p ${trn_file} -gl ${gene_list} -ao "${advOpt_ont}"
-    """
-  } else if(technology == "PACBIO"){
-    def advOpt_pacbio = advOptions.containsKey("PACBIO") ? advOptions.PACBIO : "None"
-    """
-    generate_cgMLST_profiles.py -i ${assembly} -a ${accession} -g ${schema_path} -p ${trn_file} -gl ${gene_list} -ao "${advOpt_pacbio}"
-    """
-  }
-
-}
-
 
 process KLEBORATE {
   container "${params.containerRepository}/ejfresch/kleborate:1.0"
@@ -230,7 +186,7 @@ process KLEBORATE {
 
   tag {"${project}:${accession}"}
 
-  publishDir "az://iob/${project}/amr/", overwrite: true
+  publishDir "${params.output}/${project}/amr/", overwrite: true
 
   output:
   path "*.txt", emit: txt_kleborate
@@ -251,7 +207,7 @@ process RESFINDER {
 
   tag {"${project}:${accession}"}
 
-  publishDir "az://iob/${project}/amr/", overwrite: true
+  publishDir "${params.output}/${project}/amr/", overwrite: true
 
   output:
   path "*.json", emit: json_resfinder
@@ -265,6 +221,9 @@ process RESFINDER {
 workflow {
 
   target="data/signals/*"
+
+  // Loading data on settings
+  settings=parseJson("./settings.json")
 
   // Creating a channel with the signals 
   ch_signals=Channel.watchPath(target, 'create, modify').until{ it -> it.baseName == 'STOP' }
@@ -285,6 +244,7 @@ workflow {
   data["tag"]="${it.value.project}:${it.key}"
   data["payLoad"] = it.value
   data.payLoad.key = it.key
+  data.payLoad.schemas = it.value?.schemas ?: settings["organism"][data.payLoad.organism].defaultSchemas
   data.payLoad.num_seq_tech = data.payLoad.sequencing_technology.flatten().size()
   if(data.payLoad.accessions){
       data.payLoad.entrypoint = "accessions"
@@ -365,7 +325,7 @@ b.sequences.view()
   // Current limitations: it will process only the first accession / assumes that you will provide a single accession
   PREFETCH(b.accessions.map{
     it -> 
-    [it.payLoad.project, it.payLoad.key, it.payLoad.accessions[0], it.payLoad.sequencing_technology[0], it.payLoad.organism, it.payLoad.experiment_list]
+    [it.payLoad.project, it.payLoad.key, it.payLoad.accessions[0], it.payLoad.sequencing_technology[0], it.payLoad.organism, it.payLoad.experiment_list, it.payload.schemas]
     }
   )
 
@@ -402,30 +362,31 @@ b.sequences.view()
     it.payLoad.R2,
     it.payLoad.layout,
     it.payLoad.organism,
-    it.payLoad.experiment_list
+    it.payLoad.experiment_list,
+    it.payLoad.schemas
     ]
   })
 
   COMBINE_FASTQ.out.view()
 
 
-  settings=parseJson("./settings.json")
+
 
 
   // Creating a channel with all samples with reads (including those for which we downloaded the reads from NCBI/ENA)
   ch_reads = PREFETCH.out.map{
-    project, accession, technology, reads, organism, experiment_list ->
-    [project, accession, technology, reads, reads.size(), organism, experiment_list, settings[organism].genomeSize]
+    project, accession, technology, reads, organism, experiment_list, schemas ->
+    [project, accession, technology, reads, reads.size(), organism, experiment_list, settings["organism"][organism].genomeSize, schemas]
     }.mix(
       ch_combine.no_need.map{
         it -> 
         def read_set = it.payLoad.reads[0]
-        [it.payLoad.project, it.payLoad.key, it.payLoad.sequencing_technology[0], read_set, read_set.size() , it.payLoad.organism, it.payLoad.experiment_list, settings[it.payLoad.organism].genomeSize]
+        [it.payLoad.project, it.payLoad.key, it.payLoad.sequencing_technology[0], read_set, read_set.size(), it.payLoad.organism, it.payLoad.experiment_list, settings["organism"][it.payLoad.organism].genomeSize, it.payLoad.schemas]
       }
     ).mix(
       COMBINE_FASTQ.out.map{
-        project, accession, technology, reads, layout, organism, experiment_list ->
-        [project, accession, technology, reads, reads.size(), organism, experiment_list, settings[organism].genomeSize]
+        project, accession, technology, reads, layout, organism, experiment_list, schemas ->
+        [project, accession, technology, reads, reads.size(), organism, experiment_list, settings["organism"][organism].genomeSize, schemas]
       }
     )
   
@@ -433,14 +394,10 @@ b.sequences.view()
   // Trimming reads, downsampling and generating assemblies
   TRIM(ch_reads) | DOWNSAMPLE | ASSEMBLE
 
-  // Loading data on cgMLST settings
-  cgMLST_settings=parseJson("./cgmlst_settings.json")
-
-
   // Creating a channel with all samples with assemblies
   ch_assemblies = ASSEMBLE.out.map{
-    project, accession, technology, assembly, organism, experiment_list ->
-      [project, accession, technology, assembly, organism, experiment_list]
+    project, accession, technology, assembly, organism, experiment_list, schemas ->
+      [project, accession, technology, assembly, organism, experiment_list, schemas]
   }.mix(
     b.assemblies.map{
       it ->
@@ -449,30 +406,31 @@ b.sequences.view()
         it.payLoad.sequencing_technology[0], 
         it.payLoad.assembly, 
         it.payLoad.organism, 
-        it.payLoad.experiment_list
+        it.payLoad.experiment_list,
+        it.payLoad.schemas
         ]
     }
-  ) 
-  
-  
+  )
   ch_assemblies.view()
 
   // Generating cgMLST profiles
-  CG_MLST(ch_assemblies.filter{it -> it[5].contains("allele_call")}.map{
-    project, accession, technology, assembly, organism, experiment_list ->
-      [project, accession, technology, assembly, organism, experiment_list,
-      cgMLST_settings[organism].schemaPath, 
-      cgMLST_settings[organism].trnFile, 
-      cgMLST_settings[organism].geneList, 
-      cgMLST_settings[organism].containsKey("advOptions") ? cgMLST_settings[organism].advOptions.IONTORRENT.refAllelesErrorCorrection : "", 
-      cgMLST_settings[organism].containsKey("advOptions") ? cgMLST_settings[organism].advOptions : [:]
-      ]
-  }
+  ALLELE_CALL(ch_assemblies
+    .filter{ it -> it[5].contains("allele_call") }
+    .flatMap{ project, accession, technology, assembly, organism, experiment_list, schemas ->
+      schemas.collect { schema ->
+        [project, accession, technology, assembly, organism, experiment_list,
+        settings["schemas"][schema].schemaPath,
+        settings["schemas"][schema].trnFile,
+        settings["schemas"][schema].geneList,
+        settings["schemas"][schema].containsKey("advOptions") ? settings["schemas"][schema].advOptions.IONTORRENT.refAllelesErrorCorrection : "",
+        settings["schemas"][schema].containsKey("advOptions") ? settings["schemas"][schema].advOptions : [:],
+        "${accession}_allele-call_${schema}",
+        schema
+        ]
+      }
+    }
   )
-
-
   
-
   // QC
   QC(ch_assemblies.filter{it -> it[5].contains("qc")})
 
