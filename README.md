@@ -58,7 +58,7 @@ Optional fields in the json input:
 - `schemas`*: The name of one (or more) schemas to use in allele calling instead of the default schema for the organism.
 - `flags`*: Not yet supported.
 
-* Should be specified as a list.
+\* Should be specified as a list.
 
 Depending on the type of data, the input can thus be formatted as any of the below options:
 ```
