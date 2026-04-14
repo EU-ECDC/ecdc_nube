@@ -499,9 +499,9 @@ b.sequences.view()
   QC(ch_assemblies.filter{it -> it[5].contains("qc")})
 
   // Species verification
-  SPECIES_VERIFICATION(ch_assemblies.filter{ project, accession, technology, assembly, organism, experiment_list -> 
+  SPECIES_VERIFICATION(ch_assemblies.filter{ project, accession, technology, assembly, organism, experiment_list, schemas -> 
     experiment_list.contains("species_verification")
-    }.map{project, accession, technology, assembly, organism, experiment_list ->
+    }.map{project, accession, technology, assembly, organism, experiment_list, schemas ->
       [project, accession, assembly, organism, experiment_list, "${params.speciesReferences}/${organism}/"]
     }
   )
