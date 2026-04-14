@@ -18,7 +18,7 @@ Mandatory fields in the json input:
   - `accessions`*: SRA or ENA accession to start analysis from publically available reads.
   - `reads`*: Path to fastq file(s), available locally or in cloud.
   - `assembly`: Path to assembly, available locally or in cloud.
-  - `sequences`: Path to sequences, available locally or in cloud.
+  - `sequences`: Path to sequences, available locally or in cloud. Currently used for the experiment `add_to_alignment`.
 - `sequencing_technology`*: Sequencing technology used. [ILLUMINA, IONTORRENT, ONT or PACBIO]
 - `organism`: Which organism to tailor the analysis for. Available options can be found in the [settings](https://github.com/EU-ECDC/ecdc_nube/blob/main/settings.json).
 - `experiment_list`*: Specify one or several post-assembly analyses to perform. The following analyses are available:
