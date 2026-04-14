@@ -64,6 +64,10 @@
             "genomeSize": "4.8Mb",
             "defaultSchemas": ["SALMISO-ChewieNS-1"]
         },
+        "YERSENT":{
+            "genomeSize": "4.65Mb",
+            "defaultSchemas": ["YERSENT-BIGSdb-Pasteur"]
+        },
         "YERSISO":{
             "genomeSize": "4.65Mb",
             "defaultSchemas": ["YERSISO-BIGSdb-1"]
