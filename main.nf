@@ -261,31 +261,31 @@ workflow {
   a01.view()
   
   // Reshaping the signals
-  a=a01.splitJson().map{it -> 
-  def data=[:]
-  data["tag"]="${it.value.project}:${it.key}"
-  data["payLoad"] = it.value
-  data.payLoad.key = it.key
-  data.payLoad.schemas = it.value?.schemas ?: settings["organism"][data.payLoad.organism].defaultSchemas
-  data.payLoad.num_seq_tech = data.payLoad.sequencing_technology.flatten().size()
-  if(data.payLoad.accessions){
+  a=a01.splitJson().map{it ->
+    def data=[:]
+    data["tag"]="${it.value.project}:${it.key}"
+    data["payLoad"] = it.value
+    data.payLoad.key = it.key
+    data.payLoad.schemas = it.value?.schemas ?: settings["organism"][data.payLoad.organism].defaultSchemas
+    data.payLoad.num_seq_tech = data.payLoad.sequencing_technology.flatten().size()
+    if(data.payLoad.accessions){
       data.payLoad.entrypoint = "accessions"
       data.payLoad.accessions = data.payLoad.accessions.flatten()
       data.payLoad.accessions = data.payLoad.accessions.collect{ it.replace("NCBI|","").replace("ENA|","") }
     }
-  else if(data.payLoad.reads){
+    else if(data.payLoad.reads){
       data.payLoad.entrypoint = "reads"
       // I fix the s3 paths
       data.payLoad.reads = data.payLoad.reads.collect{
         nested_list ->
-          nested_list.collect { item ->
-          item.replace("S3|", "s3://")
-          }
+        nested_list.collect { item ->
+        item.replace("S3|", "s3://")
+        }
       }
       // I get the number of read sets
       data.payLoad.num_read_sets = data.payLoad.reads.size()
       // I get the layouts
-      def layouts = data.payLoad.reads.collect{ 
+      def layouts = data.payLoad.reads.collect{
         k ->
         def cardinality_read_set = k.size() 
         def lout = "error"
@@ -302,9 +302,7 @@ workflow {
           lout = "error"
         }        
         lout
-
       }
-      
       def layout = "not set"
       if ( layouts.toSet().size() == 1 ){
         layout = layouts[0]
@@ -312,9 +310,7 @@ workflow {
       else {
         layout = "mixed/error"
       }
-
       data.payLoad.layout = layout
-
       println data.payLoad.reads.flatten().collect({it.replace("S3|","s3://")})
     }
     else if(data.payLoad.assembly){
@@ -324,12 +320,12 @@ workflow {
       data.payLoad.entrypoint = "sequences"
       data.payLoad.flags = it.value?.flags ?: ""
     }
-  return(data)
-}
+    return(data)
+  }
 
 
-// Branching by entrypoint
-b = a.branch{i -> 
+  // Branching by entrypoint
+  b = a.branch{i -> 
     accessions: i.payLoad.entrypoint == "accessions" 
       return i 
     reads: i.payLoad.entrypoint == "reads" 
@@ -340,7 +336,7 @@ b = a.branch{i ->
       return i
   } 
 
-b.sequences.view()
+  b.sequences.view()
 
 
   // Getting reads from accessions
