@@ -24,6 +24,10 @@
             "genomeSize": "4.9Mb",
             "defaultSchemas": ["ENTERISO-Ridom-1"]
         },
+        "HAVISO":{
+            "genomeSize": "",
+            "defaultSchemas": [""]
+        },
         "KLEBISO":{
             "genomeSize": "5.6Mb",
             "defaultSchemas": ["KLEBISO-Ridom-1"]
@@ -43,6 +47,10 @@
         "MYCOISO":{
             "genomeSize": "4.4Mb",
             "defaultSchemas": ["MYCOISO-Ridom-1"]
+        },
+        "POLIISO":{
+            "genomeSize": "",
+            "defaultSchemas": [""]
         },
         "PROVISO":{
             "genomeSize": "4.55Mb",
