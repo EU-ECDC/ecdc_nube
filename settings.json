@@ -24,6 +24,10 @@
             "genomeSize": "4.9Mb",
             "defaultSchemas": ["ENTERISO-Ridom-1"]
         },
+        "HAVISO":{
+            "genomeSize": "",
+            "defaultSchemas": [""]
+        },
         "KLEBISO":{
             "genomeSize": "5.6Mb",
             "defaultSchemas": ["KLEBISO-Ridom-1"]
@@ -44,6 +48,10 @@
             "genomeSize": "4.4Mb",
             "defaultSchemas": ["MYCOISO-Ridom-1"]
         },
+        "POLIISO":{
+            "genomeSize": "",
+            "defaultSchemas": [""]
+        },
         "PROVISO":{
             "genomeSize": "4.55Mb",
             "defaultSchemas": ["PROVISO-Custom-1"]
@@ -55,6 +63,10 @@
         "SALMISO":{
             "genomeSize": "4.8Mb",
             "defaultSchemas": ["SALMISO-ChewieNS-1"]
+        },
+        "YERSENT":{
+            "genomeSize": "4.65Mb",
+            "defaultSchemas": ["YERSENT-BIGSdb-Pasteur"]
         },
         "YERSISO":{
             "genomeSize": "4.65Mb",

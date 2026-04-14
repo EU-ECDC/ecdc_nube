@@ -325,7 +325,7 @@ b.sequences.view()
   // Current limitations: it will process only the first accession / assumes that you will provide a single accession
   PREFETCH(b.accessions.map{
     it -> 
-    [it.payLoad.project, it.payLoad.key, it.payLoad.accessions[0], it.payLoad.sequencing_technology[0], it.payLoad.organism, it.payLoad.experiment_list, it.payload.schemas]
+    [it.payLoad.project, it.payLoad.key, it.payLoad.accessions[0], it.payLoad.sequencing_technology[0], it.payLoad.organism, it.payLoad.experiment_list, it.payLoad.schemas]
     }
   )
 
