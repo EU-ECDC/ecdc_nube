@@ -472,16 +472,16 @@ workflow {
       it.payLoad.key, 
       it.payLoad.experiment_list]
     }
-)
-POLIISO(b.sequences.filter{it -> it.payLoad.organism == "POLIISO"}.map{it -> [
-      it.payLoad.sequences,
-      it.payLoad.flags,
-      it.payLoad.project,
-      it.payLoad.organism,
-      it.payLoad.key, 
-      it.payLoad.experiment_list]
-    }
-)
+  )
+  POLIISO(b.sequences.filter{it -> it.payLoad.organism == "POLIISO"}.map{it -> [
+        it.payLoad.sequences,
+        it.payLoad.flags,
+        it.payLoad.project,
+        it.payLoad.organism,
+        it.payLoad.key,
+        it.payLoad.experiment_list]
+      }
+  )
 
 
 
