@@ -4,7 +4,7 @@ process AMRFINDER {
   time '10m'
 
   input:
-  tuple val(project), val(accession), val(sequencing_technology), path(assembly), val(organism), val(experiment_list)
+  tuple val(project), val(accession), val(sequencing_technology), path(assembly), val(organism), val(experiment_list), val(schemas)
 
   tag {"${project}:${accession}"}
 
@@ -49,7 +49,7 @@ take:
 main:
   AMRFINDER(data.filter{it -> it[5].contains("amrfinder")})
   MLST_CGE(data.filter{it -> it[5].contains("mlst")}.map{
-    project, accession, technology, assembly, organism, experiment_list ->
+    project, accession, technology, assembly, organism, experiment_list, schemas ->
     [project, accession, technology, assembly, organism, experiment_list, "az://iob/schemas/MLST/"]
   })
 
