@@ -4,7 +4,7 @@ process AMRFINDER {
   time '10m'
 
   input:
-  tuple val(project), val(accession), val(sequencing_technology), path(assembly), val(organism), val(experiment_list)
+  tuple val(project), val(accession), val(sequencing_technology), path(assembly), val(organism), val(experiment_list), val(schemas)
 
   tag {"${project}:${accession}"}
 
