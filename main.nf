@@ -223,20 +223,20 @@ process SPECIES_VERIFICATION {
   errorStrategy 'ignore'
 
   input:
-  tuple val(project), val(accession), path(assembly), val(organism), val(experiment_list), path(references_path)
+  tuple val(payLoad), path(assembly), path(references_path)
 
-  tag {"${project}:${accession}"}
+  tag {"${payLoad.project}:${payLoad.id}"}
 
-  publishDir "${params.output}/${project}/species_verification/", overwrite: true
+  publishDir "${params.output}/${payLoad.project}/species_verification/", overwrite: true
 
   output:
-  tuple val(project), val(accession), val(organism), val(experiment_list), path("${accession}_species.tsv")
+  tuple val(payLoad), path("${payLoad.id}_species.tsv")
 
   shell:
   """
-  ls -1 ${organism}/*.fna > list_ref_genomes.txt
-  fastANI -q ${accession}.fasta --rl list_ref_genomes.txt -o fastani_out.txt
-  parse_fastani.py -in ${accession}.fasta --data_summary ${organism}/data_summary.tsv
+  ls -1 ${payLoad.organism}/*.fna > list_ref_genomes.txt
+  fastANI -q ${payLoad.id}.fasta --rl list_ref_genomes.txt -o fastani_out.txt
+  parse_fastani.py -in ${payLoad.id}.fasta --data_summary ${payLoad.organism}/data_summary.tsv
   """
 }
 
@@ -399,10 +399,9 @@ workflow {
   QC(ch_assemblies.filter{ payLoad, assembly -> payLoad.experiment_list.contains("qc")})
 
   // Species verification
-  SPECIES_VERIFICATION(ch_assemblies.filter{ project, accession, technology, assembly, organism, experiment_list, schemas -> 
-    experiment_list.contains("species_verification")
-    }.map{project, accession, technology, assembly, organism, experiment_list, schemas ->
-      [project, accession, assembly, organism, experiment_list, "${params.speciesReferences}/${organism}/"]
+  SPECIES_VERIFICATION(ch_assemblies{ payLoad, assembly -> payLoad.experiment_list.contains("species_verification")}
+    .map{payLoad, assembly ->
+      [payLoad, assembly, "${params.speciesReferences}/${payLoad.organism}/"]
     }
   )
   
