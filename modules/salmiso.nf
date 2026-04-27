@@ -4,18 +4,18 @@ process AMRFINDER {
   time '10m'
 
   input:
-  tuple val(project), val(accession), val(sequencing_technology), path(assembly), val(organism), val(experiment_list), val(schemas)
+  tuple val(payLoad), path(assembly)
 
-  tag {"${project}:${accession}"}
+  tag {"${payLoad.project}:${payLoad.id}"}
 
-  publishDir "${params.output}/${project}/amr/", overwrite: true
+  publishDir "${params.output}/${payLoad.project}/amr/", overwrite: true
 
   output:
-  tuple val(project), val(accession), path("${accession}_amrfinder.tsv"), val(organism), val(experiment_list)
+  tuple val(payLoad), path("${payLoad.id}_amrfinder.tsv")
  
   shell:
   """
-  amrfinder -n ${assembly} -q --plus --organism Salmonella --output ${accession}_amrfinder.tsv 
+  amrfinder -n ${assembly} -q --plus --organism Salmonella --output ${payLoad.id}_amrfinder.tsv
   """
 }
 
@@ -24,6 +24,6 @@ take:
   data
 
 main:
-  AMRFINDER(data.filter{it -> it[5].contains("amrfinder")})
+  AMRFINDER(data.filter{payLoad, assembly -> payLoad.experiment_list.contains("amrfinder")})
 
 }
