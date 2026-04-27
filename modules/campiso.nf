@@ -4,18 +4,18 @@ process AMRFINDER {
   time '10m'
 
   input:
-  tuple val(project), val(accession), val(sequencing_technology), path(assembly), val(organism), val(experiment_list), val(schemas)
+  tuple val(payLoad), path(assembly)
 
-  tag {"${project}:${accession}"}
+  tag {"${payLoad.project}:${payLoad.id}"}
 
-  publishDir "${params.output}/${project}/amr/", overwrite: true
+  publishDir "${params.output}/${payLoad.project}/amr/", overwrite: true
 
   output:
-  tuple val(project), val(accession), path("${accession}_amrfinder.tsv"), val(organism), val(experiment_list)
+  tuple val(payLoad), path("${payLoad.id}_amrfinder.tsv")
  
   shell:
   """
-  amrfinder -n ${assembly} -q --plus --organism Campylobacter --output ${accession}_amrfinder.tsv 
+  amrfinder -n ${assembly} -q --plus --organism Campylobacter --output ${payLoad.id}_amrfinder.tsv 
   """
 }
 
@@ -25,19 +25,19 @@ process MLST_CGE {
   time '10m'
 
   input:
-  tuple val(project), val(accession), val(sequencing_technology), path(assembly), val(organism), val(experiment_list), path(path_to_mlst_schemes)
+  tuple val(payLoad), path(assembly), path(path_to_mlst_schemes)
 
-  tag {"${project}:${accession}"}
+  tag {"${payLoad.project}:${payLoad.id}"}
 
-  publishDir "${params.output}/${project}/MLST/", overwrite: true
+  publishDir "${params.output}/${payLoad.project}/MLST/", overwrite: true
 
   output:
-  tuple val(project), val(accession), path("${accession}_mlst.json"), val(organism), val(experiment_list)
+  tuple val(payLoad), path("${payLoad.id}_mlst.json")
  
   shell:
   '''
   mlst.py -i !{assembly} -s cjejuni -p !{path_to_mlst_schemes} -o .
-  ln data.json !{accession}_mlst.json
+  ln data.json !{payLoad.id}_mlst.json
   '''
 }
 
@@ -47,10 +47,10 @@ take:
   data
 
 main:
-  AMRFINDER(data.filter{it -> it[5].contains("amrfinder")})
-  MLST_CGE(data.filter{it -> it[5].contains("mlst")}.map{
-    project, accession, technology, assembly, organism, experiment_list, schemas ->
-    [project, accession, technology, assembly, organism, experiment_list, "az://iob/schemas/MLST/"]
+  AMRFINDER(data.filter{payLoad, assembly -> payLoad.experiment_list.contains("amrfinder")})
+  MLST_CGE(data.filter{payLoad, assembly -> payLoad.experiment_list.contains("mlst")}.map{
+    payLoad, assembly ->
+    [payLoad, assembly, "az://iob/schemas/MLST/"]
   })
 
 }
