@@ -399,7 +399,7 @@ workflow {
   QC(ch_assemblies.filter{ payLoad, assembly -> payLoad.experiment_list.contains("qc")})
 
   // Species verification
-  SPECIES_VERIFICATION(ch_assemblies{ payLoad, assembly -> payLoad.experiment_list.contains("species_verification")}
+  SPECIES_VERIFICATION(ch_assemblies.filter{ payLoad, assembly -> payLoad.experiment_list.contains("species_verification")}
     .map{payLoad, assembly ->
       [payLoad, assembly, "${params.speciesReferences}/${payLoad.organism}/"]
     }
