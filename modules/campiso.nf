@@ -50,7 +50,7 @@ main:
   AMRFINDER(data.filter{payLoad, assembly -> payLoad.experiment_list.contains("amrfinder")})
   MLST_CGE(data.filter{payLoad, assembly -> payLoad.experiment_list.contains("mlst")}.map{
     payLoad, assembly ->
-    [payLoad, assembly, "az://iob/schemas/MLST/"]
+    [payLoad, assembly, params.mlstSchemas]
   })
 
 }

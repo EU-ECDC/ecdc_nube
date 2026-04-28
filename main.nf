@@ -383,10 +383,10 @@ workflow {
       payLoad.schemas.collect { schema ->
         [payLoad,
         assembly,
-        settings["schemas"][schema].schemaPath,
-        settings["schemas"][schema].trnFile,
-        settings["schemas"][schema].geneList,
-        settings["schemas"][schema].containsKey("advOptions") ? settings["schemas"][schema].advOptions.IONTORRENT.refAllelesErrorCorrection : "",
+        "${params.allelecallSchemas}/${settings["schemas"][schema].schemaPath}",
+        "${params.allelecallSchemas}/${settings["schemas"][schema].trnFile}",
+        "${params.allelecallSchemas}/${settings["schemas"][schema].geneList}",
+        settings["schemas"][schema].containsKey("advOptions") ? "${params.allelecallSchemas}/${settings["schemas"][schema].advOptions.IONTORRENT.refAllelesErrorCorrection}" : "",
         settings["schemas"][schema].containsKey("advOptions") ? settings["schemas"][schema].advOptions : [:],
         "${payLoad.id}_allele-call_${schema}",
         schema

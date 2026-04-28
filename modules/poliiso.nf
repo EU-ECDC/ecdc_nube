@@ -37,7 +37,7 @@ take:
   data
 
 main:
-  ch_current_alignment = Channel.fromPath("${params.alignmentDirectory}/POLIISO/**", type: 'file').collect()
+  ch_current_alignment = Channel.fromPath("${params.phylogenyAlignments}/POLIISO/**", type: 'file').collect()
   SEQ_ALIGN_PHYLOGENY(data
     .filter{payLoad, sequences -> payLoad.experiment_list.contains("add_to_alignment")}
     .combine(ch_current_alignment).map{i ->
