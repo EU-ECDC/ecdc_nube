@@ -266,7 +266,7 @@ workflow {
     payLoad.id                      = it.key
     payLoad.project                 = it.value.project
     payLoad.organism                = it.value.organism
-    payLoad.sequencing_technology   = it.value.sequencing_technology[0]
+    payLoad.sequencing_technology   = it.value.sequencing_technology?.getAt(0) ?: ""
     payLoad.experiment_list         = it.value.experiment_list
     payLoad.schemas                 = it.value?.schemas ?: settings["organism"][it.value.organism].defaultSchemas
     payLoad.num_seq_tech            = it.value.sequencing_technology.flatten().size()
