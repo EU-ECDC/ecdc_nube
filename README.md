@@ -88,9 +88,9 @@ Depending on the type of data, the input can be formatted as any of the below op
 ### Parameters
 
 Run parameters and paths can be set by updating the nextflow config. These include the following:
-- output                Directory for storing the output results
-- allelecallSchemas     Directory where allele calling schemas are located. Subdirectories are specified in 'settings.json' for each organism
-- mlstSchemas           Directory where mlst schemas are located
-- speciesReferences     Directory where species references to use for species verification are located
-- phylogenyAlignments   Directory where existing phylogenetic alignments are located
+- output                Directory for storing the output results.
+- allelecallSchemas     Directory where allele calling schemas are located. Subdirectories are specified in 'settings.json' for each organism.
+- mlstSchemas           Directory where mlst schemas are located.
+- speciesReferences     Directory where references to use for species verification are located.
+- phylogenyAlignments   Directory where existing phylogenetic alignments are located.
 
