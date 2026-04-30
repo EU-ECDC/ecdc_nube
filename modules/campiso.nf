@@ -4,18 +4,18 @@ process AMRFINDER {
   time '10m'
 
   input:
-  tuple val(payLoad), path(assembly)
+  tuple val(meta), path(assembly)
 
-  tag {"${payLoad.project}:${payLoad.id}"}
+  tag {"${meta.project}:${meta.id}"}
 
-  publishDir "${params.output}/${payLoad.project}/amr/", overwrite: true
+  publishDir "${params.output}/${meta.project}/amr/", overwrite: true
 
   output:
-  tuple val(payLoad), path("${payLoad.id}_amrfinder.tsv")
+  tuple val(meta), path("${meta.id}_amrfinder.tsv")
  
   shell:
   """
-  amrfinder -n ${assembly} -q --plus --organism Campylobacter --output ${payLoad.id}_amrfinder.tsv 
+  amrfinder -n ${assembly} -q --plus --organism Campylobacter --output ${meta.id}_amrfinder.tsv 
   """
 }
 
@@ -25,19 +25,19 @@ process MLST_CGE {
   time '10m'
 
   input:
-  tuple val(payLoad), path(assembly), path(path_to_mlst_schemes)
+  tuple val(meta), path(assembly), path(path_to_mlst_schemes)
 
-  tag {"${payLoad.project}:${payLoad.id}"}
+  tag {"${meta.project}:${meta.id}"}
 
-  publishDir "${params.output}/${payLoad.project}/MLST/", overwrite: true
+  publishDir "${params.output}/${meta.project}/MLST/", overwrite: true
 
   output:
-  tuple val(payLoad), path("${payLoad.id}_mlst.json")
+  tuple val(meta), path("${meta.id}_mlst.json")
  
   shell:
   '''
   mlst.py -i !{assembly} -s cjejuni -p !{path_to_mlst_schemes} -o .
-  ln data.json !{payLoad.id}_mlst.json
+  ln data.json !{meta.id}_mlst.json
   '''
 }
 
@@ -47,10 +47,10 @@ take:
   data
 
 main:
-  AMRFINDER(data.filter{payLoad, assembly -> payLoad.experiment_list.contains("amrfinder")})
-  MLST_CGE(data.filter{payLoad, assembly -> payLoad.experiment_list.contains("mlst")}.map{
-    payLoad, assembly ->
-    [payLoad, assembly, params.mlstSchemas]
+  AMRFINDER(data.filter{meta, assembly -> meta.experiment_list.contains("amrfinder")})
+  MLST_CGE(data.filter{meta, assembly -> meta.experiment_list.contains("mlst")}.map{
+    meta, assembly ->
+    [meta, assembly, params.mlstSchemas]
   })
 
 }

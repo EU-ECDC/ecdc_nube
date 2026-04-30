@@ -4,19 +4,19 @@ process QUAST {
   time '10m'
 
   input:
-  tuple val(payLoad), path(assembly)
+  tuple val(meta), path(assembly)
 
-  tag {"${payLoad.project}:${payLoad.id}"}
+  tag {"${meta.project}:${meta.id}"}
 
-  publishDir "${params.output}/${payLoad.project}/qc/", overwrite: true
+  publishDir "${params.output}/${meta.project}/qc/", overwrite: true
 
   output:
-  tuple val(payLoad), path("${payLoad.id}_quast.tsv", arity: '1..*')
+  tuple val(meta), path("${meta.id}_quast.tsv", arity: '1..*')
 
   shell:
   """
   quast.py -o . --no-plots --no-html ${assembly}
-  ln transposed_report.tsv ${payLoad.id}_quast.tsv
+  ln transposed_report.tsv ${meta.id}_quast.tsv
   """
 }
 
