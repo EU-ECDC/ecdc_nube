@@ -31,12 +31,12 @@ process PREFETCH {
   }
   
   input:
-    tuple val(project), val(accession), val(run_id), val(technology), val(organism), val(experiment_list), val(schemas)
+    tuple val(meta), val(run_id)
 
-  tag {"${project}:${accession}"}
+  tag {"${meta.project}:${meta.id}"}
 
   output:
-    tuple val(project), val(accession), val(technology), path('*.fastq.gz', arity: '1..*'), val(organism), val(experiment_list), val(schemas)
+    tuple val(meta), path('*.fastq.gz', arity: '1..*')
 
   shell:
   """
@@ -44,27 +44,25 @@ process PREFETCH {
   """
 }
 
-
 process COMBINE_FASTQ {
   container "${params.containerRepository}/ejfresch/ncbi-tools:2.3"
   errorStrategy 'ignore'
   time '30m'
 
   input:
-  tuple val(project), val(accession), val(technology), path(R1, arity: '1..*'), path(R2, arity: '1..*'), val(layout), val(organism), val(experiment_list), val(schemas)
+  tuple val(meta), path(R1, arity: '1..*'), path(R2, arity: '1..*')
 
-  tag {"${project}:${accession}"}
+  tag {"${meta.project}:${meta.id}"}
 
   output:
-  tuple val(project), val(accession), val(technology), path("*-combined_?.fastq.gz", arity: '1..*'), val(layout), val(organism), val(experiment_list), val(schemas)
+  tuple val(meta), path("*-combined_?.fastq.gz", arity: '1..*')
  
   script:
   """
-  cat ${R1.join(" ")} > ${accession}-combined_1.fastq.gz
-  cat ${R2.join(" ")} > ${accession}-combined_2.fastq.gz
+  cat ${R1.join(" ")} > ${meta.id}-combined_1.fastq.gz
+  cat ${R2.join(" ")} > ${meta.id}-combined_2.fastq.gz
   """
 }
-
 
 process TRIM {
   container "${params.containerRepository}/ejfresch/denovo_assembly-tools:1.3"
@@ -73,26 +71,25 @@ process TRIM {
   memory '12 GB'
 
   input:
-  tuple val(project), val(accession), val(technology), path(reads, arity: '1..*'), val(cardinality), val(organism), val(experiment_list), val(genome_size), val(schemas)
+  tuple val(meta), path(reads, arity: '1..*')
 
-  tag {"${project}:${accession}"}
+  tag {"${meta.project}:${meta.id}"}
 
   output:
-  tuple val(project), val(accession), val(technology), path("*-trimmed_?.fastq.gz", arity: '1..*'), val(cardinality), val(organism), val(experiment_list), val(genome_size), val(schemas)
+  tuple val(meta), path("*-trimmed_?.fastq.gz", arity: '1..*')
  
   shell:
-  if(cardinality == 1){
+  if(meta.single_end){
     """
-    fastp -i ${reads[0]} -o !{accession}-trimmed_1.fastq.gz
+    fastp -i ${reads[0]} -o !{meta.id}-trimmed_1.fastq.gz
     """
-  } else if(cardinality == 2){
+  } else {
     """
-    fastp -i ${reads[0]} -I ${reads[1]} -o !{accession}-trimmed_1.fastq.gz -O !{accession}-trimmed_2.fastq.gz
+    fastp -i ${reads[0]} -I ${reads[1]} -o !{meta.id}-trimmed_1.fastq.gz -O !{meta.id}-trimmed_2.fastq.gz
     """
   }
 
 }
-
 
 process DOWNSAMPLE {
   container "${params.containerRepository}/ejfresch/denovo_assembly-tools:1.3"
@@ -100,21 +97,22 @@ process DOWNSAMPLE {
   time '30m'
 
   input:
-  tuple val(project), val(accession), val(technology), path(reads, arity: '1..*'), val(cardinality), val(organism), val(experiment_list), val(genome_size), val(schemas)
+  tuple val(meta), path(reads, arity: '1..*'), val(genome_size)
 
-  tag {"${project}:${accession}"}
+  tag {"${meta.project}:${meta.id}"}
 
   output:
-  tuple val(project), val(accession), val(technology), path("*-downsampled_?.fastq.gz", arity: '1..*'), val(cardinality), val(organism), val(experiment_list), val(schemas)
+  tuple val(meta), path("*-downsampled_?.fastq.gz", arity: '1..*')
  
   shell:
-  if(cardinality == 1){
+  
+  if (meta.single_end){
     """
-    rasusa reads -o !{accession}-downsampled_1.fastq.gz --coverage 150 --genome-size ${genome_size} ${reads[0]}
+    rasusa reads -o !{meta.id}-downsampled_1.fastq.gz --coverage 150 --genome-size ${genome_size} ${reads[0]}
     """
-  } else if(cardinality == 2){
+  } else {
     """
-    rasusa reads -o !{accession}-downsampled_1.fastq.gz -o !{accession}-downsampled_2.fastq.gz --coverage 150 --genome-size ${genome_size} ${reads[0]} ${reads[1]}
+    rasusa reads -o !{meta.id}-downsampled_1.fastq.gz -o !{meta.id}-downsampled_2.fastq.gz --coverage 150 --genome-size ${genome_size} ${reads[0]} ${reads[1]}
     """
   }
 
@@ -126,54 +124,54 @@ process ASSEMBLE {
   //time '20h'
 
   input:
-  tuple val(project), val(accession), val(technology), path(read_set), val(cardinality), val(organism), val(experiment_list), val(schemas)
+  tuple val(meta), path(reads)
 
-  tag {"${project}:${accession}"}
+  tag {"${meta.project}:${meta.id}"}
 
-  publishDir "${params.output}/${project}/assemblies/", overwrite: true
+  publishDir "${params.output}/${meta.project}/assemblies/", overwrite: true
 
   output:
-  tuple val(project), val(accession), val(technology), path("${accession}.fasta"), val(organism), val(experiment_list), val(schemas)
+  tuple val(meta), path("${meta.id}.fasta")
 
   shell:
-  if(technology == "ILLUMINA"){
-    if(cardinality == 1){
+  if(meta.sequencing_technology == "ILLUMINA"){
+    if(meta.single_end){
       """
-      spades.py -s ${read_set[0]} --careful --only-assembler --cov-cutoff 10 -o ${accession}_assembly
-      ln ${accession}_assembly/contigs.fasta ${accession}.fasta
+      spades.py -s ${reads[0]} --careful --only-assembler --cov-cutoff 10 -o ${meta.id}_assembly
+      ln ${meta.id}_assembly/contigs.fasta ${meta.id}.fasta
       """
-    } else if(cardinality == 2){
+    } else {
       """
-      spades.py -1 ${read_set[0]} -2 ${read_set[1]} --careful --only-assembler --cov-cutoff 10 -o ${accession}_assembly
-      ln ${accession}_assembly/contigs.fasta ${accession}.fasta
-      """
-    }
-  } else if(technology == "IONTORRENT"){
-    if(cardinality == 1){
-      """
-      spades.py -s ${read_set[0]} -k 21,33,55,77,99,127 --iontorrent --careful -o ${accession}_assembly
-      ln ${accession}_assembly/contigs.fasta ${accession}.fasta
-      """
-    } else if(cardinality == 2){
-      """
-      spades.py -1 ${read_set[0]} -2 ${read_set[1]} -k 21,33,55,77,99,127 --iontorrent --careful -o ${accession}_assembly
-      ln ${accession}_assembly/contigs.fasta ${accession}.fasta
+      spades.py -1 ${reads[0]} -2 ${reads[1]} --careful --only-assembler --cov-cutoff 10 -o ${meta.id}_assembly
+      ln ${meta.id}_assembly/contigs.fasta ${meta.id}.fasta
       """
     }
-  } else if(technology == "ONT"){
-    if(cardinality == 1){
+  } else if(meta.sequencing_technology == "IONTORRENT"){
+    if(meta.single_end){
       """
-      flye --nano-hq ${read_set[0]} --out-dir ${accession}_assembly
-      ln ${accession}_assembly/assembly.fasta ${accession}.fasta
+      spades.py -s ${reads[0]} -k 21,33,55,77,99,127 --iontorrent --careful -o ${meta.id}_assembly
+      ln ${meta.id}_assembly/contigs.fasta ${meta.id}.fasta
+      """
+    } else {
+      """
+      spades.py -1 ${reads[0]} -2 ${reads[1]} -k 21,33,55,77,99,127 --iontorrent --careful -o ${meta.id}_assembly
+      ln ${meta.id}_assembly/contigs.fasta ${meta.id}.fasta
       """
     }
-  } else if(technology == "PACBIO"){
-    if(cardinality == 1){
+  } else if(meta.sequencing_technology == "ONT"){
+    if(meta.single_end){
       """
-      flye --pacbio-hifi ${read_set[0]} --out-dir ${accession}_assembly 
-      ln ${accession}_assembly/assembly.fasta ${accession}.fasta
+      flye --nano-hq ${reads[0]} --out-dir ${meta.id}_assembly
+      ln ${meta.id}_assembly/assembly.fasta ${meta.id}.fasta
       """
-    } 
+    }
+  } else if(meta.sequencing_technology == "PACBIO"){
+    if(meta.single_end){
+      """
+      flye --pacbio-hifi ${reads[0]} --out-dir ${meta.id}_assembly
+      ln ${meta.id}_assembly/assembly.fasta ${meta.id}.fasta
+      """
+    }
   }
 }
 
@@ -182,18 +180,18 @@ process KLEBORATE {
   errorStrategy 'ignore'
 
   input:
-  tuple val(project), val(accession), path(assembly), val(organism)
+  tuple val(meta), path(assembly)
 
-  tag {"${project}:${accession}"}
+  tag {"${meta.project}:${meta.id}"}
 
-  publishDir "${params.output}/${project}/amr/", overwrite: true
+  publishDir "${params.output}/${meta.project}/amr/", overwrite: true
 
   output:
   path "*.txt", emit: txt_kleborate
 
   shell:
   """
-  kleborate --assemblies !{assembly} --outfile !{accession}_kleborate.txt --resistance --kaptive
+  kleborate --assemblies !{assembly} --outfile !{meta.id}_kleborate.txt --resistance --kaptive
   """
 }
 
@@ -203,11 +201,11 @@ process RESFINDER {
   errorStrategy 'ignore'
 
   input:
-  tuple val(project), val(accession), path(assembly), val(organism)
+  tuple val(meta), path(assembly)
 
-  tag {"${project}:${accession}"}
+  tag {"${meta.project}:${meta.id}"}
 
-  publishDir "${params.output}/${project}/amr/", overwrite: true
+  publishDir "${params.output}/${meta.project}/amr/", overwrite: true
 
   output:
   path "*.json", emit: json_resfinder
@@ -223,20 +221,20 @@ process SPECIES_VERIFICATION {
   errorStrategy 'ignore'
 
   input:
-  tuple val(project), val(accession), path(assembly), val(organism), val(experiment_list), path(references_path)
+  tuple val(meta), path(assembly), path(references_path)
 
-  tag {"${project}:${accession}"}
+  tag {"${meta.project}:${meta.id}"}
 
-  publishDir "${params.output}/${project}/species_verification/", overwrite: true
+  publishDir "${params.output}/${meta.project}/species_verification/", overwrite: true
 
   output:
-  tuple val(project), val(accession), val(organism), val(experiment_list), path("${accession}_species.tsv")
+  tuple val(meta), path("${meta.id}_species.tsv")
 
   shell:
   """
-  ls -1 ${organism}/*.fna > list_ref_genomes.txt
-  fastANI -q ${accession}.fasta --rl list_ref_genomes.txt -o fastani_out.txt
-  parse_fastani.py -in ${accession}.fasta --data_summary ${organism}/data_summary.tsv
+  ls -1 ${meta.organism}/*.fna > list_ref_genomes.txt
+  fastANI -q ${meta.id}.fasta --rl list_ref_genomes.txt -o fastani_out.txt
+  parse_fastani.py -in ${meta.id}.fasta --data_summary ${meta.organism}/data_summary.tsv
   """
 }
 
@@ -249,43 +247,46 @@ workflow {
 
   // Creating a channel with the signals 
   ch_signals=Channel.watchPath(target, 'create, modify').until{ it -> it.baseName == 'STOP' }
-  //ch_signals=Channel.fromPath(target) 
 
   // Filtering (looking for .json files) and renaming the files of the signals
-  a01=ch_signals.filter(~/.+\.json$/).map{
+  ch_json=ch_signals.filter(~/.+\.json$/).map{
     def orig_file = new File("${it}")
     def new_file = new File("${it}.lock")
     orig_file.renameTo(new_file)
     return(new_file)
   }
-  a01.view()
+  ch_json.view()
   
   // Reshaping the signals
-  a=a01.splitJson().map{it -> 
-  def data=[:]
-  data["tag"]="${it.value.project}:${it.key}"
-  data["payLoad"] = it.value
-  data.payLoad.key = it.key
-  data.payLoad.schemas = it.value?.schemas ?: settings["organism"][data.payLoad.organism].defaultSchemas
-  data.payLoad.num_seq_tech = data.payLoad.sequencing_technology.flatten().size()
-  if(data.payLoad.accessions){
-      data.payLoad.entrypoint = "accessions"
-      data.payLoad.accessions = data.payLoad.accessions.flatten()
-      data.payLoad.accessions = data.payLoad.accessions.collect{ it.replace("NCBI|","").replace("ENA|","") }
+  ch_input = ch_json.splitJson().map{it ->
+    def data = []
+    def meta = [:]
+    meta.id                      = it.key
+    meta.project                 = it.value.project
+    meta.organism                = it.value.organism
+    meta.experiment_list         = it.value.experiment_list
+    meta.sequencing_technology   = it.value.sequencing_technology?.getAt(0) ?: ""
+    meta.num_seq_tech            = (it.value.sequencing_technology ?: []).flatten().size()
+    meta.schemas                 = it.value?.schemas ?: settings["organism"][it.value.organism].defaultSchemas
+    meta.flags                   = it.value?.flags ?: ""
+
+    if(it.value.accessions){
+      meta.entrypoint = "accessions"
+      data = it.value.accessions.flatten().collect{ it.replace("NCBI|","").replace("ENA|","") }[0]
     }
-  else if(data.payLoad.reads){
-      data.payLoad.entrypoint = "reads"
-      // I fix the s3 paths
-      data.payLoad.reads = data.payLoad.reads.collect{
+    else if(it.value.reads){
+      meta.entrypoint = "reads"
+      // Fix the s3 paths
+      data = it.value.reads.collect{
         nested_list ->
-          nested_list.collect { item ->
-          item.replace("S3|", "s3://")
-          }
+        nested_list.collect { item ->
+        item.replace("S3|", "s3://")
+        }
       }
-      // I get the number of read sets
-      data.payLoad.num_read_sets = data.payLoad.reads.size()
-      // I get the layouts
-      def layouts = data.payLoad.reads.collect{ 
+      // Get the number of read sets
+      meta.num_read_sets = data.size()
+      // Get the layouts
+      def layouts = data.collect{
         k ->
         def cardinality_read_set = k.size() 
         def lout = "error"
@@ -302,9 +303,7 @@ workflow {
           lout = "error"
         }        
         lout
-
       }
-      
       def layout = "not set"
       if ( layouts.toSet().size() == 1 ){
         layout = layouts[0]
@@ -312,141 +311,88 @@ workflow {
       else {
         layout = "mixed/error"
       }
-
-      data.payLoad.layout = layout
-
-      println data.payLoad.reads.flatten().collect({it.replace("S3|","s3://")})
+      meta.layout = layout
+      if ( meta.layout == "single" ){
+          meta.single_end = true
+        }
+      else {
+        meta.single_end = false
+      }
+      println data.flatten().collect({it.replace("S3|","s3://")})
     }
-    else if(data.payLoad.assembly){
-      data.payLoad.entrypoint = "assemblies"
+    else if(it.value.assembly){
+      meta.entrypoint = "assemblies"
+      data = it.value.assembly
     }
-    else if(data.payLoad.sequences){
-      data.payLoad.entrypoint = "sequences"
-      data.payLoad.flags = it.value?.flags ?: ""
+    else if(it.value.sequences){
+      meta.entrypoint = "sequences"
+      data = it.value.sequences
     }
-  return(data)
-}
+    return([meta, data])
+  }
 
-
-// Branching by entrypoint
-b = a.branch{i -> 
-    accessions: i.payLoad.entrypoint == "accessions" 
-      return i 
-    reads: i.payLoad.entrypoint == "reads" 
-      return i 
-    assemblies: i.payLoad.entrypoint == "assemblies" 
-      return i
-    sequences: i.payLoad.entrypoint == "sequences"
-      return i
-  } 
-
-b.sequences.view()
-
-
+  // Branching by entrypoint
+  ch_data = ch_input.branch{meta, data ->
+    accessions: meta.entrypoint == "accessions"
+    reads: meta.entrypoint == "reads"
+    assemblies: meta.entrypoint == "assemblies"
+    sequences: meta.entrypoint == "sequences"
+  }
+  
   // Getting reads from accessions
   // Current limitations: it will process only the first accession / assumes that you will provide a single accession
-  PREFETCH(b.accessions.map{
-    it ->
-    [it.payLoad.project, it.payLoad.key, it.payLoad.accessions[0], it.payLoad.sequencing_technology[0], it.payLoad.organism, it.payLoad.experiment_list, it.payLoad.schemas]
-    }
-  )
-
-  // I split the entries with reads based on the sequencing technologies 
-  ch_reads_by_seq_tech = b.reads.branch{
-    it ->
-    one: it.payLoad.num_seq_tech == 1
-      return it
-    two: it.payLoad.num_seq_tech == 2
-      return it
+  PREFETCH(ch_data.accessions)
+  
+  // Split the entries with reads based on the sequencing technologies
+  ch_reads_by_seq_tech = ch_data.reads.branch{
+    meta, reads ->
+    one: meta.num_seq_tech == 1
+    two: meta.num_seq_tech == 2
     other: true
-      return it
   }
-  
-  // I split the entries with reads based on the num_read_sets and the layout
-  ch_combine = ch_reads_by_seq_tech.one.branch{
-    it -> 
-    combine_fastq: it.payLoad.num_read_sets == 1 && it.payLoad.layout == "inferred_paired"
-      it.payLoad.R1 = it.payLoad.reads[0].sort().indexed(1).findAll { i, v -> i % 2 == 1 }.collect{it.value}
-      it.payLoad.R2 = it.payLoad.reads[0].sort().indexed(1).findAll { i, v -> i % 2 == 0 }.collect{it.value}
-      return it
+
+  // Split the entries with reads based on the num_read_sets and the layout
+  ch_reads_combine = ch_reads_by_seq_tech.one.branch{
+    meta, reads ->
+    combine_fastqs: meta.num_read_sets == 1 && meta.layout == "inferred_paired"
+      R1 = reads[0].sort().indexed(1).findAll { i, v -> i % 2 == 1 }.collect{it.value}
+      R2 = reads[0].sort().indexed(1).findAll { i, v -> i % 2 == 0 }.collect{it.value}
+      return tuple(meta, R1, R2)
     no_need: true
-      return it
+      return tuple(meta, reads[0])
   }
-
-  ch_combine.combine_fastq.view()
-
-  COMBINE_FASTQ(ch_combine.combine_fastq.map{
-    it ->
-    [it.payLoad.project, 
-    it.payLoad.key, 
-    it.payLoad.sequencing_technology[0], 
-    it.payLoad.R1,
-    it.payLoad.R2,
-    it.payLoad.layout,
-    it.payLoad.organism,
-    it.payLoad.experiment_list,
-    it.payLoad.schemas
-    ]
-  })
-
-  COMBINE_FASTQ.out.view()
-
-
-
-
-
-  // Creating a channel with all samples with reads (including those for which we downloaded the reads from NCBI/ENA)
-  ch_reads = PREFETCH.out.map{
-    project, accession, technology, reads, organism, experiment_list, schemas ->
-    [project, accession, technology, reads, reads.size(), organism, experiment_list, settings["organism"][organism].genomeSize, schemas]
-    }.mix(
-      ch_combine.no_need.map{
-        it -> 
-        def read_set = it.payLoad.reads[0]
-        [it.payLoad.project, it.payLoad.key, it.payLoad.sequencing_technology[0], read_set, read_set.size(), it.payLoad.organism, it.payLoad.experiment_list, settings["organism"][it.payLoad.organism].genomeSize, it.payLoad.schemas]
-      }
-    ).mix(
-      COMBINE_FASTQ.out.map{
-        project, accession, technology, reads, layout, organism, experiment_list, schemas ->
-        [project, accession, technology, reads, reads.size(), organism, experiment_list, settings["organism"][organism].genomeSize, schemas]
-      }
-    )
   
-  ch_reads.view()
+  COMBINE_FASTQ(ch_reads_combine.combine_fastqs)
+  
+  // Creating a channel with all samples with reads (including those for which we downloaded the reads from NCBI/ENA)
+  ch_reads = PREFETCH.out.mix(ch_reads_combine.no_need).mix(COMBINE_FASTQ.out)
+  
   // Trimming reads, downsampling and generating assemblies
-  TRIM(ch_reads) | DOWNSAMPLE | ASSEMBLE
-
-  // Creating a channel with all samples with assemblies
-  ch_assemblies = ASSEMBLE.out.map{
-    project, accession, technology, assembly, organism, experiment_list, schemas ->
-      [project, accession, technology, assembly, organism, experiment_list, schemas]
-  }.mix(
-    b.assemblies.map{
-      it ->
-        [it.payLoad.project, 
-        it.payLoad.key, 
-        it.payLoad.sequencing_technology[0], 
-        it.payLoad.assembly, 
-        it.payLoad.organism, 
-        it.payLoad.experiment_list,
-        it.payLoad.schemas
-        ]
+  TRIM(ch_reads)
+  DOWNSAMPLE(TRIM.out.map{
+    meta, reads ->
+      [meta, reads, settings["organism"][meta.organism].genomeSize]
     }
   )
+  ASSEMBLE(DOWNSAMPLE.out)
+  
+  // Creating a channel with all samples with assemblies
+  ch_assemblies = ASSEMBLE.out.mix(ch_data.assemblies)
   ch_assemblies.view()
 
   // Generating cgMLST profiles
   ALLELE_CALL(ch_assemblies
-    .filter{ it -> it[5].contains("allele_call") }
-    .flatMap{ project, accession, technology, assembly, organism, experiment_list, schemas ->
-      schemas.collect { schema ->
-        [project, accession, technology, assembly, organism, experiment_list,
-        settings["schemas"][schema].schemaPath,
-        settings["schemas"][schema].trnFile,
-        settings["schemas"][schema].geneList,
-        settings["schemas"][schema].containsKey("advOptions") ? settings["schemas"][schema].advOptions.IONTORRENT.refAllelesErrorCorrection : "",
+    .filter{ meta, assembly -> meta.experiment_list.contains("allele_call") }
+    .flatMap{ meta, assembly ->
+      meta.schemas.collect { schema ->
+        [meta,
+        assembly,
+        "${params.allelecallSchemas}/${settings["schemas"][schema].schemaPath}",
+        "${params.allelecallSchemas}/${settings["schemas"][schema].trnFile}",
+        "${params.allelecallSchemas}/${settings["schemas"][schema].geneList}",
+        settings["schemas"][schema].containsKey("advOptions") ? "${params.allelecallSchemas}/${settings["schemas"][schema].advOptions.IONTORRENT.refAllelesErrorCorrection}" : "",
         settings["schemas"][schema].containsKey("advOptions") ? settings["schemas"][schema].advOptions : [:],
-        "${accession}_allele-call_${schema}",
+        "${meta.id}_allele-call_${schema}",
         schema
         ]
       }
@@ -454,41 +400,21 @@ b.sequences.view()
   )
   
   // QC
-  QC(ch_assemblies.filter{it -> it[5].contains("qc")})
+  QC(ch_assemblies.filter{ meta, assembly -> meta.experiment_list.contains("qc")})
 
   // Species verification
-  SPECIES_VERIFICATION(ch_assemblies.filter{ project, accession, technology, assembly, organism, experiment_list, schemas -> 
-    experiment_list.contains("species_verification")
-    }.map{project, accession, technology, assembly, organism, experiment_list, schemas ->
-      [project, accession, assembly, organism, experiment_list, "${params.speciesReferences}/${organism}/"]
+  SPECIES_VERIFICATION(ch_assemblies.filter{ meta, assembly -> meta.experiment_list.contains("species_verification")}
+    .map{meta, assembly ->
+      [meta, assembly, "${params.speciesReferences}/${meta.organism}/"]
     }
   )
-
+  
   // Pathogen-specific sub-workflows
-  SALMISO(ch_assemblies.filter{it -> it[4] == "SALMISO"})
-  ECOLIISO(ch_assemblies.filter{it -> it[4] == "ECOLIISO"})
-  CAMPISO(ch_assemblies.filter{it -> it[4] == "CAMPISO"})
-  HAVISO(b.sequences.filter{it -> it.payLoad.organism == "HAVISO"}.map{it -> [
-      it.payLoad.sequences,
-      it.payLoad.flags,
-      it.payLoad.project,
-      it.payLoad.organism,
-      it.payLoad.key, 
-      it.payLoad.experiment_list]
-    }
-)
-POLIISO(b.sequences.filter{it -> it.payLoad.organism == "POLIISO"}.map{it -> [
-      it.payLoad.sequences,
-      it.payLoad.flags,
-      it.payLoad.project,
-      it.payLoad.organism,
-      it.payLoad.key, 
-      it.payLoad.experiment_list]
-    }
-)
-
-
-
+  SALMISO(ch_assemblies.filter{meta, assembly -> meta.organism == "SALMISO"})
+  ECOLIISO(ch_assemblies.filter{meta, assembly -> meta.organism == "ECOLIISO"})
+  CAMPISO(ch_assemblies.filter{meta, assembly -> meta.organism == "CAMPISO"})
+  HAVISO(ch_data.sequences.filter{meta, sequences -> meta.organism == "HAVISO"})
+  POLIISO(ch_data.sequences.filter{meta, sequences -> meta.organism == "POLIISO"})
 
 }
 
