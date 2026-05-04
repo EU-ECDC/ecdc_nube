@@ -128,7 +128,7 @@ process ASSEMBLE {
 
   tag {"${meta.project}:${meta.id}"}
 
-  publishDir "${params.output}/${meta.id}/assemblies/", overwrite: true
+  publishDir "${params.output}/${meta.project}/assemblies/", overwrite: true
 
   output:
   tuple val(meta), path("${meta.id}.fasta")
