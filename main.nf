@@ -81,8 +81,7 @@ process TRIM {
   shell:
   if(meta.single_end){
     """
-    echo fastp -i ${reads[0]} -o !{meta.id}-trimmed_1.fastq.gz
-    touch !{meta.id}-trimmed_1.fastq.gz
+    fastp -i ${reads[0]} -o !{meta.id}-trimmed_1.fastq.gz
     """
   } else {
     """
@@ -150,9 +149,8 @@ process ASSEMBLE {
   } else if(meta.sequencing_technology == "IONTORRENT"){
     if(meta.single_end){
       """
-      echo spades.py -s ${reads[0]} -k 21,33,55,77,99,127 --iontorrent --careful -o ${meta.id}_assembly
-      ehco ln ${meta.id}_assembly/contigs.fasta ${meta.id}.fasta
-      touch ${meta.id}.fasta
+      spades.py -s ${reads[0]} -k 21,33,55,77,99,127 --iontorrent --careful -o ${meta.id}_assembly
+      ln ${meta.id}_assembly/contigs.fasta ${meta.id}.fasta
       """
     } else {
       """
