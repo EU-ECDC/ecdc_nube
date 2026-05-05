@@ -13,6 +13,7 @@ process SEQ_ALIGN_PHYLOGENY{
   tag {"${meta.project}:${meta.id}"}
 
   script:
+  def args = meta.flags ? "-f ${meta.flags}" : ""
   """
   mkdir -p data/
   # all already existing alignments and distance
@@ -24,7 +25,7 @@ process SEQ_ALIGN_PHYLOGENY{
   fi
   
 
-  calc_alignments.py -in ${fasta_input_sequences} -r data/${meta.organism}_references.fasta -a data/ -o alignments/ -f ${meta.flags}
+  calc_alignments.py -in ${fasta_input_sequences} -r data/${meta.organism}_references.fasta -a data/ -o alignments/ ${args}
   calc_dist_matrices.py -a alignments/ -d data/ -o dist_matrices/
   calc_trees.py -a alignments/ -o trees/
   """
