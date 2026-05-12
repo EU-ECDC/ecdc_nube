@@ -11,6 +11,8 @@ include { CAMPISO } from './modules/campiso.nf'
 include { HAVISO } from './modules/haviso.nf'
 include { POLIISO } from './modules/poliiso.nf'
 include { ALLELE_CALL } from './modules/allelecall.nf'
+include { IONTORRENT_ERROR_CORRECTION } from './modules/iontorrent_error_correction.nf'
+
 
 def parseJson(input_file){
   def jsonSlurper = new JsonSlurper()
@@ -378,27 +380,49 @@ workflow {
   
   // Creating a channel with all samples with assemblies
   ch_assemblies = ASSEMBLE.out.mix(ch_data.assemblies)
-  ch_assemblies.view()
 
-  // Generating cgMLST profiles
-  ALLELE_CALL(ch_assemblies
-    .filter{ meta, assembly -> meta.experiment_list.contains("allele_call") }
+  // Process to run allele calling for each input schema
+  assembly_per_schema = ch_assemblies
     .flatMap{ meta, assembly ->
       meta.schemas.collect { schema ->
+        return tuple(meta + [ schema: schema ], assembly)
+      }
+  }
+  
+  // Perform error correction for IonTorrent assemblies
+  assembly_per_schema_correction = assembly_per_schema
+    .branch{ meta, assembly ->
+      iontorrent: meta.sequencing_technology == "IONTORRENT"
+      no_need: true
+  }
+  
+  allele_call_experiments = ["allele_call", "allele_call_X"]
+  
+  IONTORRENT_ERROR_CORRECTION(assembly_per_schema_correction.iontorrent
+    .filter{ meta, assembly -> allele_call_experiments.any { meta.experiment_list.contains(it) }}
+    .map{ meta, assembly ->
         [meta,
         assembly,
-        "${params.allelecallSchemas}/${settings["schemas"][schema].schemaPath}",
-        "${params.allelecallSchemas}/${settings["schemas"][schema].trnFile}",
-        "${params.allelecallSchemas}/${settings["schemas"][schema].geneList}",
-        settings["schemas"][schema].containsKey("advOptions") ? "${params.allelecallSchemas}/${settings["schemas"][schema].advOptions.IONTORRENT.refAllelesErrorCorrection}" : "",
-        settings["schemas"][schema].containsKey("advOptions") ? settings["schemas"][schema].advOptions : [:],
-        "${meta.id}_allele-call_${schema}",
-        schema
+        settings["schemas"][meta.schema].containsKey("advOptions") ? "${params.allelecallSchemas}/${settings["schemas"][meta.schema].advOptions.IONTORRENT.refAllelesErrorCorrection}" : ""
         ]
-      }
     }
   )
+  assembly_per_schema_corrected = IONTORRENT_ERROR_CORRECTION.out.mix(assembly_per_schema_correction.no_need)
   
+  // Generating cgMLST profiles
+  ALLELE_CALL(assembly_per_schema_corrected
+    .filter{ meta, assembly -> meta.experiment_list.contains("allele_call") }
+    .map{ meta, assembly ->
+      [meta,
+      assembly,
+      "${params.allelecallSchemas}/${settings["schemas"][meta.schema].schemaPath}",
+      "${params.allelecallSchemas}/${settings["schemas"][meta.schema].trnFile}",
+      "${params.allelecallSchemas}/${settings["schemas"][meta.schema].geneList}",
+      settings["schemas"][meta.schema].containsKey("advOptions") ? settings["schemas"][meta.schema].advOptions : [:]
+      ]
+    }
+  )
+
   // QC
   QC(ch_assemblies.filter{ meta, assembly -> meta.experiment_list.contains("qc")})
 
