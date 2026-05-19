@@ -14,7 +14,7 @@ process ALLELE_CALL {
     path "*.tsv", emit: tsv_chewbbaca
 
   script:
-  def prefix = "${meta.id}_allele-call_${meta.schema}"
+  def prefix = task.ext.prefix ?: "${meta.id}_allele-call_${meta.schema}"
   if(meta.sequencing_technology == "ILLUMINA"){
     def advOpt_illumina = advOptions.containsKey("ILLUMINA") ? advOptions.ILLUMINA : "None"
     """
