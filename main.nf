@@ -1,19 +1,16 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl=2
 
-import java.text.SimpleDateFormat
-import groovy.json.JsonSlurper
-
 include { QC } from './modules/qc.nf'
 include { SALMISO } from './modules/salmiso.nf'
 include { ECOLIISO } from './modules/ecoliiso.nf'
 include { CAMPISO } from './modules/campiso.nf'
 include { HAVISO } from './modules/haviso.nf'
 include { POLIISO } from './modules/poliiso.nf'
-include { ALLELE_CALL } from './modules/allelecall.nf'
+include { ALLELE_CALL ; TARANYS } from './modules/allelecall.nf'
 
 def parseJson(input_file){
-  def jsonSlurper = new JsonSlurper()
+  def jsonSlurper = new groovy.json.JsonSlurper()
   String currentJSONContent = new File(input_file).text
   def jsonContent = jsonSlurper.parseText(currentJSONContent)
   return(jsonContent)
@@ -29,11 +26,10 @@ process PREFETCH {
       'ignore'
     }
   }
+  tag {"${meta.project}:${meta.id}"}
   
   input:
     tuple val(meta), val(run_id)
-
-  tag {"${meta.project}:${meta.id}"}
 
   output:
     tuple val(meta), path('*.fastq.gz', arity: '1..*')
@@ -48,11 +44,10 @@ process COMBINE_FASTQ {
   container "${params.containerRepository}/ejfresch/ncbi-tools:2.3"
   errorStrategy 'ignore'
   time '30m'
+  tag {"${meta.project}:${meta.id}"}
 
   input:
   tuple val(meta), path(R1, arity: '1..*'), path(R2, arity: '1..*')
-
-  tag {"${meta.project}:${meta.id}"}
 
   output:
   tuple val(meta), path("*-combined_?.fastq.gz", arity: '1..*')
@@ -69,11 +64,10 @@ process TRIM {
   errorStrategy 'ignore'
   time '30m'
   memory '12 GB'
+  tag {"${meta.project}:${meta.id}"}
 
   input:
   tuple val(meta), path(reads, arity: '1..*')
-
-  tag {"${meta.project}:${meta.id}"}
 
   output:
   tuple val(meta), path("*-trimmed_?.fastq.gz", arity: '1..*')
@@ -95,17 +89,15 @@ process DOWNSAMPLE {
   container "${params.containerRepository}/ejfresch/denovo_assembly-tools:1.3"
   errorStrategy 'ignore'
   time '30m'
+  tag {"${meta.project}:${meta.id}"}
 
   input:
   tuple val(meta), path(reads, arity: '1..*'), val(genome_size)
-
-  tag {"${meta.project}:${meta.id}"}
 
   output:
   tuple val(meta), path("*-downsampled_?.fastq.gz", arity: '1..*')
  
   shell:
-  
   if (meta.single_end){
     """
     rasusa reads -o !{meta.id}-downsampled_1.fastq.gz --coverage 150 --genome-size ${genome_size} ${reads[0]}
@@ -122,13 +114,11 @@ process ASSEMBLE {
   container "${params.containerRepository}/ejfresch/denovo_assembly-tools:1.2"
   errorStrategy 'ignore'
   //time '20h'
+  tag {"${meta.project}:${meta.id}"}
+  publishDir {"${params.output}/${meta.project}/assemblies/"}, overwrite: true
 
   input:
   tuple val(meta), path(reads)
-
-  tag {"${meta.project}:${meta.id}"}
-
-  publishDir "${params.output}/${meta.project}/assemblies/", overwrite: true
 
   output:
   tuple val(meta), path("${meta.id}.fasta")
@@ -178,13 +168,11 @@ process ASSEMBLE {
 process KLEBORATE {
   container "${params.containerRepository}/ejfresch/kleborate:1.0"
   errorStrategy 'ignore'
+  tag {"${meta.project}:${meta.id}"}
+  publishDir {"${params.output}/${meta.project}/amr/"}, overwrite: true
 
   input:
   tuple val(meta), path(assembly)
-
-  tag {"${meta.project}:${meta.id}"}
-
-  publishDir "${params.output}/${meta.project}/amr/", overwrite: true
 
   output:
   path "*.txt", emit: txt_kleborate
@@ -199,13 +187,11 @@ process RESFINDER {
   container 'docker.io/genomicepidemiology/resfinder'
   containerOptions '--volume $(pwd):/app --user root'
   errorStrategy 'ignore'
+  tag {"${meta.project}:${meta.id}"}
+  publishDir {"${params.output}/${meta.project}/amr/"}, overwrite: true
 
   input:
   tuple val(meta), path(assembly)
-
-  tag {"${meta.project}:${meta.id}"}
-
-  publishDir "${params.output}/${meta.project}/amr/", overwrite: true
 
   output:
   path "*.json", emit: json_resfinder
@@ -219,13 +205,11 @@ process RESFINDER {
 process SPECIES_VERIFICATION {
   container "docker.io/ejfresch/fastani:1.34"
   errorStrategy 'ignore'
+  tag {"${meta.project}:${meta.id}"}
+  publishDir {"${params.output}/${meta.project}/species_verification/"}, overwrite: true
 
   input:
   tuple val(meta), path(assembly), path(references_path)
-
-  tag {"${meta.project}:${meta.id}"}
-
-  publishDir "${params.output}/${meta.project}/species_verification/", overwrite: true
 
   output:
   tuple val(meta), path("${meta.id}_species.tsv")
@@ -244,6 +228,7 @@ workflow {
 
   // Loading data on settings
   settings=parseJson("./settings.json")
+  settings_taranys=parseJson("./settings-taranys.json")
 
   // Creating a channel with the signals 
   ch_signals=Channel.watchPath(target, 'create, modify').until{ it -> it.baseName == 'STOP' }
@@ -355,8 +340,8 @@ workflow {
   ch_reads_combine = ch_reads_by_seq_tech.one.branch{
     meta, reads ->
     combine_fastqs: meta.num_read_sets == 1 && meta.layout == "inferred_paired"
-      R1 = reads[0].sort().indexed(1).findAll { i, v -> i % 2 == 1 }.collect{it.value}
-      R2 = reads[0].sort().indexed(1).findAll { i, v -> i % 2 == 0 }.collect{it.value}
+      def R1 = reads[0].sort().indexed(1).findAll { i, v -> i % 2 == 1 }.collect{it.value}
+      def R2 = reads[0].sort().indexed(1).findAll { i, v -> i % 2 == 0 }.collect{it.value}
       return tuple(meta, R1, R2)
     no_need: true
       return tuple(meta, reads[0])
@@ -399,6 +384,25 @@ workflow {
     }
   )
   
+
+TARANYS(ch_assemblies
+  .filter{ meta, assembly -> meta.experiment_list.contains("taranys") }
+  .flatMap{ meta, assembly ->
+    def schemas = settings_taranys["organism"]?.get(meta.organism)?.defaultSchemas ?: []
+    schemas.collect { schema ->
+      [meta,
+       assembly,
+       "${params.allelecallSchemas}/${settings_taranys["schemas"][schema].schemaPath}",
+       "${params.allelecallSchemas}/${settings_taranys["schemas"][schema].referenceAllelesPath}",
+       "${params.allelecallSchemas}/${settings_taranys["schemas"][schema].annotationFile}",
+       settings_taranys["schemas"][schema].containsKey("advOptions") ? settings_taranys["schemas"][schema].advOptions : [:],
+       schema
+      ]
+    }
+  }
+)
+
+
   // QC
   QC(ch_assemblies.filter{ meta, assembly -> meta.experiment_list.contains("qc")})
 
@@ -416,41 +420,42 @@ workflow {
   HAVISO(ch_data.sequences.filter{meta, sequences -> meta.organism == "HAVISO"})
   POLIISO(ch_data.sequences.filter{meta, sequences -> meta.organism == "POLIISO"})
 
-}
+  workflow.onComplete{
+    if (workflow.success) {
+      println "Workflow completed successfully."
+      // determine when the onComplete event handler was triggered
+      def date = new Date()
+      def custom_date_format = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+      def timestamp_onComplete=custom_date_format.format(date)
 
-workflow.onComplete{
-  if (workflow.success) {
-    println "Workflow completed successfully."
-    // determine when the onComplete event handler was triggered
+      /* remove the signals, given that all the expected
+      results have been generated */
+      def proc = ['./scripts/remove_signals.sh'].execute()
+      proc.waitForProcessOutput()
+
+      // write a NF_READY file
+      def oncomplete_signal = "./data/signals/NF_READY"
+      def content = "$timestamp_onComplete $workflow.runName $workflow.sessionId"
+      file(oncomplete_signal).write(content)
+    }   
+  }
+
+  workflow.onError{
+    // determine when the onError event handler was triggered
     def date = new Date()
-    def custom_date_format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-    def timestamp_onComplete=custom_date_format.format(date)
+    def custom_date_format = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+    def timestamp_onError=custom_date_format.format(date)
 
-    /* remove the signals, given that all the expected
-     results have been generated */
-    def proc = ['./scripts/remove_signals.sh'].execute()
+    // write a NF_ERROR file
+    def filename = "./data/signals/NF_ERROR"
+    def content = "$timestamp_onError\t$workflow.runName\t$workflow.sessionId\t$workflow.errorMessage"
+    file(filename).write(content)
+    println "[onError] errorMessage: $workflow.errorMessage"
+    // remove the ".lock" extensions
+    def proc = ['./scripts/remove_locks.sh'].execute()
     proc.waitForProcessOutput()
 
-    // write a NF_READY file
-    def oncomplete_signal = "./data/signals/NF_READY"
-    def content = "$timestamp_onComplete $workflow.runName $workflow.sessionId"
-    file(oncomplete_signal).write(content)
-  }   
-}
-
-workflow.onError{
-  // determine when the onError event handler was triggered
-  def date = new Date()
-  def custom_date_format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-  def timestamp_onError=custom_date_format.format(date)
-
-  // write a NF_ERROR file
-  def filename = "./data/signals/NF_ERROR"
-  def content = "$timestamp_onError\t$workflow.runName\t$workflow.sessionId\t$workflow.errorMessage"
-  file(filename).write(content)
-  println "[onError] errorMessage: $workflow.errorMessage"
-  // remove the ".lock" extensions
-  def proc = ['./scripts/remove_locks.sh'].execute()
-  proc.waitForProcessOutput()
+  }
 
 }
+
