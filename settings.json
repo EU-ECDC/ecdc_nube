@@ -195,6 +195,17 @@
                 }
             }
         },
+        "MYCOISO-Ridom-1-SSI-0.06": {
+            "schemaPath":"Custom-chewBBACA-SSI/MYCOISO-Ridom-1-SSI-0.06/",
+            "trnFile":"Custom-chewBBACA-SSI/MYCOISO-Ridom-1-SSI-0.06/Mycobacterium-trainingfile.trn",
+            "geneList":"Custom-chewBBACA-SSI/MYCOISO-Ridom-1-SSI-0.06/list_loci_cgMLST_MYCOISO.txt",
+            "advOptions":{
+                "IONTORRENT": {
+                    "chewBBACA":"--minimum-length 0 --bsr 0.6 --force-continue",
+                "refAllelesErrorCorrection":"Custom-chewBBACA-SSI/MYCOISO-Ridom-1-SSI-0.06/ref_alleles_iontorrent_error_correction_MYCOISO.fasta"
+                }
+            }
+        },
         "PROVISO-Custom-1": {
             "schemaPath":"PROVISO-Custom-1/",
             "trnFile":"PROVISO-Custom-1/Providencia_stuartii.trn",
