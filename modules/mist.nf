@@ -19,7 +19,6 @@ process MIST {
   script:
   def args = task.ext.args ?: ''
   def prefix = task.ext.prefix ?: "${meta.id}_allele-call-mist_${meta.schema}"
-  def args2 = task.ext.args2 ?: ''
   def prefix2 = task.ext.prefix2 ?: "${meta.id}_allele-call-mist_${meta.schema}"
   """
   mist call \
