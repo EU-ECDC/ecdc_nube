@@ -1,10 +1,10 @@
 process CUSTOM_CHEWBBACA_SSI {
   container "docker.io/ejfresch/custom_chewbbaca_ssi:1.0"
-  errorStrategy 'terminate'
+  errorStrategy 'ignore'
   time '30m'
-  
+
   input:
-    tuple val(meta), path(assembly), path(schema_path)
+    tuple val(meta), path(assembly), path(schema_path), path(gene_list)
 
   tag {"${meta.project}:${meta.id}:${meta.schema}"}
 
@@ -14,12 +14,9 @@ process CUSTOM_CHEWBBACA_SSI {
     path "*.tsv", emit: tsv_chewbbaca_custom
 
   script:
-  def args = task.ext.args ?: ''
+  def args = task.ext.args ?: '--cds'
   def prefix = task.ext.prefix ?: "${meta.id}_allele-call-SSI_${meta.schema}"
   """
-  mv ${assembly} sample.fa
-  chewBBACA.py AlleleCall -i . -g ${schema_path} -o . --no-inferred --hash-profiles crc32 --cds ${args}
-  file=\$(ls results_*/results_alleles_hashed.tsv)
-  mv "\$file" ${prefix}.tsv
+  generate_cgMLST_profiles.py -i ${assembly} -a ${meta.id} -g ${schema_path} -gl ${gene_list} -f ${prefix} -ao="${args}"
   """
 }

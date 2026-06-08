@@ -15,5 +15,12 @@ main:
       ]
     }
   )
-  CUSTOM_CHEWBBACA_SSI(BLAST_GENE_CALL_SSI.out)
+  CUSTOM_CHEWBBACA_SSI(BLAST_GENE_CALL_SSI.out
+  .map{ meta, assembly ->
+      [meta,
+      assembly,
+      "${params.allelecallSchemas}/${settings["schemas"][meta.schema].schemaPath}",
+      "${params.allelecallSchemas}/${settings["schemas"][meta.schema].geneList}"
+      ]
+  })
 }
