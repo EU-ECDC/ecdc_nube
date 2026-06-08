@@ -2,6 +2,7 @@ process CUSTOM_CHEWBBACA_SSI {
   container "docker.io/ejfresch/custom_chewbbaca_ssi:1.0"
   errorStrategy 'ignore'
   time '30m'
+  cpus 3
 
   input:
     tuple val(meta), path(assembly), path(schema_path), path(gene_list)
@@ -14,9 +15,9 @@ process CUSTOM_CHEWBBACA_SSI {
     path "*.tsv", emit: tsv_chewbbaca_custom
 
   script:
-  def args = task.ext.args ?: '--cds'
+  def args = task.ext.args ?: ''
   def prefix = task.ext.prefix ?: "${meta.id}_allele-call-SSI_${meta.schema}"
   """
-  generate_cgMLST_profiles.py -i ${assembly} -a ${meta.id} -g ${schema_path} -gl ${gene_list} -f ${prefix} -ao="${args}"
+  generate_cgMLST_profiles.py -i ${assembly} -a ${meta.id} -g ${schema_path} -gl ${gene_list} -f ${prefix} -ao="--cds --cpu-cores ${task.cpus} ${args}"
   """
 }
