@@ -1,5 +1,5 @@
 process MIST {
-  container "${params.containerRepository}/ejfresch/mist:1.1.0"
+  container "docker.io/ejfresch/mist:1.1.0"
   errorStrategy 'ignore'
   time '30m'
 
