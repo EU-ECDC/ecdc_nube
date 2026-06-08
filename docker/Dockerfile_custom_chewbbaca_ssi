@@ -9,35 +9,30 @@ RUN apt-get update && apt-get install -y procps git
 
 USER $MAMBA_USER
 
-RUN micromamba create -n custom_chewbbaca_ssi
-
-ENV PATH /opt/conda/envs/custom_chewbbaca_ssi/bin:$PATH
-
-RUN micromamba install -n custom_chewbbaca_ssi \
+RUN micromamba create -n custom_chewbbaca_ssi \
+  -c bioconda -c conda-forge \
   python=3.11 \
   setuptools=82.0.1 \
-  pip=26.1.1 \
-  -c bioconda -c conda-forge
+  pip=26.1.1
+
+ENV PATH /opt/conda/envs/custom_chewbbaca_ssi/bin:$PATH
 
 RUN git clone https://github.com/ssi-dk/chewBBACA && \
   cd chewBBACA  && \
   pip install .
 
 RUN micromamba install -n custom_chewbbaca_ssi \
-  numpy>=2.0.0 \
-  scipy>=1.13.0 \
-  biopython>=1.86 \
-  plotly>=6.3.1 \
-  SPARQLWrapper>=2.0.0 \
-  requests>=2.27.1 \
-  pandas>=2.3.3 \
-  pyrodigal>=3.0.0 \
+  -c bioconda -c conda-forge \
+  numpy=2.4.6 \
+  scipy=1.17.1 \
+  biopython=1.84 \
+  plotly=6.6.0 \
+  SPARQLWrapper=2.0.0 \
+  requests=2.34.2 \
+  pandas=3.0.3 \
+  pyrodigal=3.7.1 \
   blast=2.17.0 \
   prodigal=2.6.3 \
   mafft=7.525 \
-  fasttree>=2.1.11 \
-  -c bioconda -c conda-forge
-
-RUN micromamba clean --all --yes
-
-ENV PATH /opt/conda/envs/custom_chewbbaca_ssi/bin:$PATH
+  fasttree=2.2.0 \
+  && micromamba clean --all --yes
