@@ -1,0 +1,69 @@
+FROM docker.io/mambaorg/micromamba:1.2.0
+
+LABEL maintainer="Luca Freschi l.freschi@gmail.com"
+LABEL version="3.0.1"
+
+# Switch to root to install OS packages
+USER root
+RUN apt-get update && apt-get install -y procps \
+    git \ 
+    make \ 
+    libnss3 \
+    libatk-bridge2.0-0 \
+    libcups2 \
+    libxcomposite1 \
+    libxdamage1 \
+    libxfixes3 \
+    libxrandr2 \
+    libgbm1 \
+    libxkbcommon0 \
+    libpango-1.0-0 \
+    libcairo2 \
+    libasound2 && rm -rf /var/lib/apt/lists/*
+
+RUN mkdir -p /tmp/mamba /tmp/.mamba/proc /data /opt \
+    && chmod -R 777 /tmp /data /opt
+
+
+ENV HOME=/tmp
+ENV TMPDIR=/tmp
+ENV MAMBA_ROOT_PREFIX=/tmp/mamba
+ENV XDG_CACHE_HOME=/tmp
+
+RUN git clone https://github.com/BU-ISCIII/taranys.git /opt/taranys
+
+WORKDIR /opt/taranys
+
+# Create environment without pip first
+RUN micromamba create -n taranys \
+    -c conda-forge -c bioconda \
+    biopython=1.85 \
+    python=3.10 \
+    poetry>=1.7.1 \
+    prokka>=1.14 \
+    perl-app-cpanminus \
+    blast=2.13.* \
+    mash>=2 \
+    prodigal>=2.6.3 \
+    mafft>=7.505 \
+    pip \
+    "setuptools<78" \
+    infernal \
+    barrnap=0.9.* \ 
+    --yes \
+    && micromamba clean --all --yes
+RUN micromamba run -n taranys pip install -r requirements.txt \
+    && micromamba run -n taranys pip install .
+
+RUN micromamba run -n taranys python -c "import kaleido; kaleido.get_chrome_sync()"
+
+RUN micromamba run -n taranys \
+    cpanm --notest XML::Simple
+
+ENV PATH /opt/conda/envs/taranys/bin:$PATH
+
+
+WORKDIR /data
+
+ENTRYPOINT ["micromamba", "run", "-n", "taranys"]
+CMD ["bash"]

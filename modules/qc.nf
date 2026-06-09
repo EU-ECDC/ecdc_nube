@@ -2,13 +2,11 @@ process QUAST {
   container "${params.containerRepository}/ejfresch/quast:5.2.0"
   errorStrategy 'ignore'
   time '10m'
+  tag {"${meta.project}:${meta.id}"}
+  publishDir {"${params.output}/${meta.project}/qc/"}, overwrite: true
 
   input:
   tuple val(meta), path(assembly)
-
-  tag {"${meta.project}:${meta.id}"}
-
-  publishDir "${params.output}/${meta.project}/qc/", overwrite: true
 
   output:
   tuple val(meta), path("${meta.id}_quast.tsv", arity: '1..*')
