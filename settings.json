@@ -173,6 +173,17 @@
                 }
             }
         },
+        "LEGIISO-LIT-1": {
+            "schemaPath":"LEGIISO-LIT-1/",
+            "trnFile":"LEGIISO-LIT-1/Legionella_pneumophila.trn",
+            "geneList":"LEGIISO-LIT-1/list_loci_cgMLST_LEGIISO.txt",
+            "advOptions":{
+                "IONTORRENT": {
+                    "chewBBACA":"--minimum-length 0 --bsr 0.6 --force-continue",
+                    "refAllelesErrorCorrection":"LEGIISO-LIT-1/ref_alleles_iontorrent_error_correction_LEGIISO.fasta"
+                }
+            }
+        },
         "LISTISO-ChewieNS-1": {
             "schemaPath":"LISTISO-ChewieNS-1/",
             "trnFile":"LISTISO-ChewieNS-1/Listeria_monocytogenes.trn",

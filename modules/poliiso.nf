@@ -1,16 +1,14 @@
 process SEQ_ALIGN_PHYLOGENY{
   container "docker.io/ejfresch/augur:D"
   errorStrategy 'ignore'
+  publishDir {"${params.output}/${meta.project}/"}, overwrite: true
+  tag {"${meta.project}:${meta.id}"}
 
   input:
   tuple val(meta), path(fasta_input_sequences), path(current_data, arity: '1..*')
 
   output:
   tuple path("alignments/*_aligned.fasta", arity: '1..*'), path("dist_matrices/*.tsv", arity: '1..*'), path("trees/*.treefile", arity: '0..*') 
-
-  publishDir "${params.output}/${meta.project}/", overwrite: true
-
-  tag {"${meta.project}:${meta.id}"}
 
   script:
   def args = meta.flags ? "-f ${meta.flags}" : ""
