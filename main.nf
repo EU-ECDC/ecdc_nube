@@ -395,7 +395,7 @@ workflow {
   assembly_per_schema_corrected = IONTORRENT_ERROR_CORRECTION.out.mix(assembly_per_schema_correction.no_need)
   
 
-TARANYS(ch_assemblies
+TARANYS(assembly_per_schema_corrected
   .filter{ meta, assembly -> meta.experiment_list.contains("taranys") }
   .flatMap{ meta, assembly ->
     def schemas = settings_taranys["organism"]?.get(meta.organism)?.defaultSchemas ?: []
