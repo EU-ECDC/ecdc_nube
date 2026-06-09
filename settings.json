@@ -206,6 +206,17 @@
                 }
             }
         },
+        "MYCOISO-Ridom-1-MIST": {
+            "schemaPath":"mist/MYCOISO-Ridom-1-MIST/",
+            "trnFile": "",
+            "geneList":"mist/MYCOISO-Ridom-1-MIST/list_genes_cgMLST_MYCOISO.tsv",
+            "advOptions":{
+                "IONTORRENT": {
+                    "chewBBACA":"--minimum-length 0 --bsr 0.6 --force-continue",
+                    "refAllelesErrorCorrection":"mist/MYCOISO-Ridom-1-MIST/ref_alleles_iontorrent_error_correction_MYCOISO.fasta"
+                }
+            }
+        },
         "PROVISO-Custom-1": {
             "schemaPath":"PROVISO-Custom-1/",
             "trnFile":"PROVISO-Custom-1/Providencia_stuartii.trn",

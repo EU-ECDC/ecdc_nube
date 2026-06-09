@@ -7,6 +7,7 @@ include { ECOLIISO } from './modules/ecoliiso.nf'
 include { CAMPISO } from './modules/campiso.nf'
 include { HAVISO } from './modules/haviso.nf'
 include { POLIISO } from './modules/poliiso.nf'
+include { MIST } from './modules/mist.nf'
 include { ALLELE_CALL ; TARANYS } from './modules/allelecall.nf'
 include { IONTORRENT_ERROR_CORRECTION } from './modules/iontorrent_error_correction.nf'
 
@@ -381,7 +382,7 @@ workflow {
       no_need: true
   }
   
-  allele_call_experiments = ["allele_call", "taranys"]
+  allele_call_experiments = ["allele_call", "allele_call_mist", "taranys"]
 
   IONTORRENT_ERROR_CORRECTION(assembly_per_schema_correction.iontorrent
     .filter{ meta, assembly -> allele_call_experiments.any { meta.experiment_list.contains(it) }}
@@ -422,6 +423,17 @@ TARANYS(assembly_per_schema_corrected
       "${params.allelecallSchemas}/${settings["schemas"][meta.schema].trnFile}",
       "${params.allelecallSchemas}/${settings["schemas"][meta.schema].geneList}",
       settings["schemas"][meta.schema].containsKey("advOptions") ? settings["schemas"][meta.schema].advOptions : [:]
+      ]
+    }
+  )
+
+  // Generating cgMLST profiles with MIST
+  MIST(assembly_per_schema_corrected
+    .filter{ meta, assembly -> meta.experiment_list.contains("allele_call_mist") }
+    .map{ meta, assembly ->
+      [meta,
+      assembly,
+      "${params.allelecallSchemas}/${settings["schemas"][meta.schema].schemaPath}"
       ]
     }
   )
