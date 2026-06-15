@@ -2,13 +2,11 @@ process AMRFINDER {
   container "${params.containerRepository}/ncbi/amr:4.0.3-2024-10-22.1"
   errorStrategy 'ignore'
   time '10m'
+  tag {"${meta.project}:${meta.id}"}
+  publishDir {"${params.output}/${meta.project}/amr/"}, overwrite: true
 
   input:
   tuple val(meta), path(assembly)
-
-  tag {"${meta.project}:${meta.id}"}
-
-  publishDir "${params.output}/${meta.project}/amr/", overwrite: true
 
   output:
   tuple val(meta), path("${meta.id}_amrfinder.tsv")
@@ -23,13 +21,11 @@ process MLST_CGE {
   container "${params.containerRepository}/ejfresch/typing:1.0"
   errorStrategy 'ignore'
   time '10m'
+  tag {"${meta.project}:${meta.id}"}
+  publishDir {"${params.output}/${meta.project}/MLST/"}, overwrite: true
 
   input:
   tuple val(meta), path(assembly), path(path_to_mlst_schemes)
-
-  tag {"${meta.project}:${meta.id}"}
-
-  publishDir "${params.output}/${meta.project}/MLST/", overwrite: true
 
   output:
   tuple val(meta), path("${meta.id}_mlst.json")
