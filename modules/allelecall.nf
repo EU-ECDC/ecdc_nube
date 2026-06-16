@@ -2,7 +2,7 @@ process ALLELE_CALL {
   container "${params.containerRepository}/ejfresch/chewbbaca:3.3.10"
   errorStrategy 'ignore'
   time '30m'
-  tag {"${meta.project}:${meta.id}:${schema}"}
+  tag {"${meta.project}:${meta.id}:${meta.schema}"}
   publishDir {"${params.output}/${meta.project}/allele_call/${meta.schema}/"}, overwrite: true
 
   input:
@@ -39,7 +39,7 @@ process ALLELE_CALL {
 
 
 process TARANYS {
-  container "${params.containerRepository}/ejfresch/taranys:3.0.1"
+  container "${params.containerRepository}/ejfresch/taranys:3.0.1-d"
   errorStrategy 'ignore'
   time '2h'
   cpus 4

@@ -10,6 +10,7 @@ include { POLIISO } from './modules/poliiso.nf'
 include { MIST } from './modules/mist.nf'
 include { ALLELE_CALL ; TARANYS } from './modules/allelecall.nf'
 include { IONTORRENT_ERROR_CORRECTION } from './modules/iontorrent_error_correction.nf'
+include { CUSTOM_ALLELE_CALL_SSI } from './subworkflows/allele_call_custom_chewbbaca.nf'
 
 
 def parseJson(input_file){
@@ -382,7 +383,7 @@ workflow {
       no_need: true
   }
   
-  allele_call_experiments = ["allele_call", "allele_call_mist", "taranys"]
+  allele_call_experiments = ["allele_call", "allele_call_SSI", "allele_call_mist"]
 
   IONTORRENT_ERROR_CORRECTION(assembly_per_schema_correction.iontorrent
     .filter{ meta, assembly -> allele_call_experiments.any { meta.experiment_list.contains(it) }}
@@ -424,6 +425,12 @@ workflow {
       settings["schemas"][meta.schema].containsKey("advOptions") ? settings["schemas"][meta.schema].advOptions : [:]
       ]
     }
+  )
+
+  // Generate cgMLST profiles with custom chewBBACA by SSI
+  CUSTOM_ALLELE_CALL_SSI(assembly_per_schema_corrected
+    .filter { meta, assembly -> meta.experiment_list.contains("allele_call_SSI") },
+    settings
   )
 
   // Generating cgMLST profiles with MIST
