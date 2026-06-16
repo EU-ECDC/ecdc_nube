@@ -2,13 +2,11 @@ process MIST {
   container "docker.io/ejfresch/mist:1.1.0"
   errorStrategy 'ignore'
   time '30m'
+  tag {"${meta.project}:${meta.id}:${meta.schema}"}
+  publishDir "${params.output}/${meta.project}/allele_call/${meta.schema}/", overwrite: true
 
   input:
   tuple val(meta), path(assembly), path(schema_path)
-
-  tag {"${meta.project}:${meta.id}:${meta.schema}"}
-
-  publishDir "${params.output}/${meta.project}/allele_call/${meta.schema}/", overwrite: true
 
   output:
   path "*.tsv", emit: tsv_mist

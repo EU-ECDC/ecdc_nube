@@ -396,23 +396,22 @@ workflow {
   )
   assembly_per_schema_corrected = IONTORRENT_ERROR_CORRECTION.out.mix(assembly_per_schema_correction.no_need)
   
-
-TARANYS(assembly_per_schema_corrected
-  .filter{ meta, assembly -> meta.experiment_list.contains("taranys") }
-  .flatMap{ meta, assembly ->
-    def schemas = settings_taranys["organism"]?.get(meta.organism)?.defaultSchemas ?: []
-    schemas.collect { schema ->
-      [meta,
-       assembly,
-       "${params.allelecallSchemas}/${settings_taranys["schemas"][schema].schemaPath}",
-       "${params.allelecallSchemas}/${settings_taranys["schemas"][schema].referenceAllelesPath}",
-       "${params.allelecallSchemas}/${settings_taranys["schemas"][schema].annotationFile}",
-       settings_taranys["schemas"][schema].containsKey("advOptions") ? settings_taranys["schemas"][schema].advOptions : [:],
-       schema
-      ]
+  TARANYS(assembly_per_schema_corrected
+    .filter{ meta, assembly -> meta.experiment_list.contains("taranys") }
+    .flatMap{ meta, assembly ->
+      def schemas = settings_taranys["organism"]?.get(meta.organism)?.defaultSchemas ?: []
+      schemas.collect { schema ->
+        [meta,
+        assembly,
+        "${params.allelecallSchemas}/${settings_taranys["schemas"][schema].schemaPath}",
+        "${params.allelecallSchemas}/${settings_taranys["schemas"][schema].referenceAllelesPath}",
+        "${params.allelecallSchemas}/${settings_taranys["schemas"][schema].annotationFile}",
+        settings_taranys["schemas"][schema].containsKey("advOptions") ? settings_taranys["schemas"][schema].advOptions : [:],
+        schema
+        ]
+      }
     }
-  }
-)
+  )
 
   // Generating cgMLST profiles
   ALLELE_CALL(assembly_per_schema_corrected

@@ -8,8 +8,6 @@ process AMRFINDER {
   input:
   tuple val(meta), path(assembly)
 
-
-
   output:
   tuple val(meta), path("${meta.id}_amrfinder.tsv")
  
