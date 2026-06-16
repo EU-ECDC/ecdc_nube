@@ -1,5 +1,5 @@
 process BLAST_GENE_CALL_SSI {
-  container "docker.io/ejfresch/allele_blast_ssi:1.0"
+  container "${params.containerRepository}/ejfresch/allele_blast_ssi:1.0"
   errorStrategy 'ignore'
   tag {"${meta.project}:${meta.id}:${meta.schema}"}
   publishDir "${params.output}/${meta.project}/blast/${meta.schema}/", overwrite: true

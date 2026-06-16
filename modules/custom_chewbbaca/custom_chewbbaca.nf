@@ -1,5 +1,5 @@
 process CUSTOM_CHEWBBACA_SSI {
-  container "docker.io/ejfresch/custom_chewbbaca_ssi:1.0"
+  container "${params.containerRepository}/ejfresch/custom_chewbbaca_ssi:1.0"
   errorStrategy 'ignore'
   tag {"${meta.project}:${meta.id}:${meta.schema}"}
   publishDir "${params.output}/${meta.project}/allele_call/${meta.schema}/", overwrite: true
