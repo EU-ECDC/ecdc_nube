@@ -6,7 +6,7 @@
     "schemas": {
         "MYCOISO-Ridom-1": {
         "schemaPath": "taranys/MYCOISO-Ridom-1/new_schema",
-        "referenceAllelesPath": "taranys/MYCOISO-Ridom-1/reference_alleles",
+        "referenceAllelesPath": "taranys/MYCOISO-Ridom-1/ref_alleles",
         "annotationFile": "taranys/MYCOISO-Ridom-1/allele_annotation.tar.gz"
         }
     }

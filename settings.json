@@ -195,6 +195,17 @@
                 }
             }
         },
+        "LISTISO-ChewieNS-1-SSI-0.06": {
+            "schemaPath":"Custom-chewBBACA-SSI/LISTISO-ChewieNS-1-SSI-0.06/LISTISO-ChewieNS-1-SSI-0.06/",
+            "trnFile":"",
+            "geneList":"Custom-chewBBACA-SSI/LISTISO-ChewieNS-1-SSI-0.06/list_loci_cgMLST_LISTISO.txt",
+            "advOptions":{
+                "IONTORRENT": {
+                    "chewBBACA":"--minimum-length 0 --bsr 0.6 --force-continue",
+                    "refAllelesErrorCorrection":"Custom-chewBBACA-SSI/LISTISO-ChewieNS-1-SSI-0.06/ref_alleles_iontorrent_error_correction_LISTISO.fasta"
+                }
+            }
+        },
         "MYCOISO-Ridom-1": {
             "schemaPath":"MYCOISO-Ridom-1/",
             "trnFile":"MYCOISO-Ridom-1/Mycobacterium_tuberculosis_bovis_africanum_canettii.trn",
@@ -207,8 +218,8 @@
             }
         },
         "MYCOISO-Ridom-1-SSI-0.06": {
-            "schemaPath":"Custom-chewBBACA-SSI/MYCOISO-Ridom-1-SSI-0.06/",
-            "trnFile":"Custom-chewBBACA-SSI/MYCOISO-Ridom-1-SSI-0.06/Mycobacterium-trainingfile.trn",
+            "schemaPath":"Custom-chewBBACA-SSI/MYCOISO-Ridom-1-SSI-0.06/MYCOISO-Ridom-1-SSI-0.06/",
+            "trnFile":"",
             "geneList":"Custom-chewBBACA-SSI/MYCOISO-Ridom-1-SSI-0.06/list_loci_cgMLST_MYCOISO.txt",
             "advOptions":{
                 "IONTORRENT": {
