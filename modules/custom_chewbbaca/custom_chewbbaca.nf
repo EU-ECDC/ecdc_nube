@@ -7,7 +7,7 @@ process CUSTOM_CHEWBBACA_SSI {
   cpus 3
 
   input:
-    tuple val(meta), path(assembly), path(schema_path), path(gene_list)
+    tuple val(meta), path(assembly), path(schema_path), path(gene_list), val(advOptions)
 
   output:
     path "*.tsv", emit: tsv_chewbbaca_custom
@@ -15,7 +15,8 @@ process CUSTOM_CHEWBBACA_SSI {
   script:
   def args = task.ext.args ?: ''
   def prefix = task.ext.prefix ?: "${meta.id}_allele-call-SSI_${meta.schema}"
+  def advOpt_chewBBACA = advOptions.get(meta.sequencing_technology, [:]).chewBBACA ?: ''
   """
-  generate_cgMLST_profiles.py -i ${assembly} -a ${meta.id} -g ${schema_path} -gl ${gene_list} -f ${prefix} -ao="--cds --cpu-cores ${task.cpus} ${args}"
+  generate_cgMLST_profiles.py -i ${assembly} -a ${meta.id} -g ${schema_path} -gl ${gene_list} -f ${prefix} -ao="--cds --cpu-cores ${task.cpus} ${advOpt_chewBBACA} ${args}"
   """
 }

@@ -20,7 +20,8 @@ main:
       [meta,
       assembly,
       "${params.allelecallSchemas}/${settings["schemas"][meta.schema].schemaPath}",
-      "${params.allelecallSchemas}/${settings["schemas"][meta.schema].geneList}"
+      "${params.allelecallSchemas}/${settings["schemas"][meta.schema].geneList}",
+      settings["schemas"][meta.schema].containsKey("advOptions") ? settings["schemas"][meta.schema].advOptions : [:]
       ]
     }
   )
