@@ -383,7 +383,7 @@ workflow {
       no_need: true
   }
   
-  allele_call_experiments = ["allele_call", "allele_call_SSI", "allele_call_mist", "taranys"]
+  allele_call_experiments = ["allele_call", "allele_call_SSI", "allele_call_mist"]
 
   IONTORRENT_ERROR_CORRECTION(assembly_per_schema_correction.iontorrent
     .filter{ meta, assembly -> allele_call_experiments.any { meta.experiment_list.contains(it) }}
