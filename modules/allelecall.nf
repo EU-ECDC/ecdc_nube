@@ -8,9 +8,6 @@ process ALLELE_CALL {
   input:
     tuple val(meta), path(assembly), path(schema_path), path(trn_file), path(gene_list), val(advOptions)
 
-  input:
-    tuple val(meta), path(assembly), path(schema_path), path(trn_file), path(gene_list), val(advOptions)
-
   output:
     path "*.tsv", emit: tsv_chewbbaca
 
