@@ -3,7 +3,7 @@ process MIST {
   errorStrategy 'ignore'
   time '30m'
   tag {"${meta.project}:${meta.id}:${meta.schema}"}
-  publishDir "${params.output}/${meta.project}/allele_call/${meta.schema}/", overwrite: true
+  publishDir {"${params.output}/${meta.project}/allele_call/${meta.schema}/"}, overwrite: true
 
   input:
   tuple val(meta), path(assembly), path(schema_path)
