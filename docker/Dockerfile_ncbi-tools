@@ -1,0 +1,21 @@
+FROM mambaorg/micromamba:1.2.0
+
+LABEL maintainer="Luca Freschi l.freschi@gmail.com"
+# container name: ncbi-tools
+LABEL version="2.4"
+# Note: this is a container with multiple software. The tag is independent 
+# of any version of a specific software
+
+USER root
+RUN apt-get update && apt-get install -y procps
+
+USER $MAMBA_USER
+RUN micromamba create -n ncbi_tools
+
+RUN micromamba install -n ncbi_tools sra-tools=3.0.10 -c bioconda -c conda-forge
+RUN micromamba install -n ncbi_tools ncbi-datasets-cli=14.11.0 -c bioconda -c conda-forge
+RUN micromamba install -n ncbi_tools entrez-direct=16.2 -c bioconda
+RUN micromamba install -n ncbi_tools python pandas requests -c conda-forge -c bioconda
+RUN micromamba clean --all --yes
+
+ENV PATH /opt/conda/envs/ncbi_tools/bin:$PATH

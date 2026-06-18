@@ -1,0 +1,19 @@
+FROM mambaorg/micromamba:1.2.0
+
+LABEL maintainer="Luca Freschi l.freschi@gmail.com"
+# container name: chewbbaca
+# tag: 3.3.10 / reflects the version of chewBBACA
+
+USER root
+RUN apt-get update && apt-get install -y procps
+
+USER $MAMBA_USER
+RUN micromamba create -n chewbbaca
+
+RUN micromamba install -n chewbbaca python=3.10 -c conda-forge -c bioconda
+RUN micromamba install -n chewbbaca plotly=5 -c conda-forge -c bioconda
+RUN micromamba install -n chewbbaca chewbbaca=3.3.10 -c conda-forge -c bioconda
+
+RUN micromamba clean --all --yes
+
+ENV PATH /opt/conda/envs/chewbbaca/bin:$PATH
