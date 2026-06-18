@@ -1,0 +1,17 @@
+FROM mambaorg/micromamba:1.2.0
+
+LABEL maintainer="Luca Freschi l.freschi@gmail.com"
+# container name: quast
+# tag: 5.2.0 
+
+USER root
+RUN apt-get update && apt-get install -y procps
+
+USER $MAMBA_USER
+RUN micromamba create -n quast
+
+RUN micromamba install -n quast quast=5.2.0 -c bioconda -c conda-forge
+
+RUN micromamba clean --all --yes
+
+ENV PATH /opt/conda/envs/quast/bin:$PATH

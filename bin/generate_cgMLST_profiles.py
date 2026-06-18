@@ -16,7 +16,7 @@ parser.add_argument("-a", "--accession", type=str,
 parser.add_argument("-g", "--schema_directory", type=str,
                     help="Path to the schema directory", required=True)
 parser.add_argument("-p", "--ptf", type=str,
-                    help="Path to the Prodigal training file", required=True)
+                    help="Path to the Prodigal training file", required=False)
 parser.add_argument("-gl", "--gene_list", type=str,
                     help="Path to a file with the list of genes/loci to perform allele calling", required=True)
 parser.add_argument("-ao", "--adv_options", type=str,
@@ -41,12 +41,13 @@ cmd_chewbbaca = [
     "-g", args.schema_directory,
     "-o", ".",
     "--no-inferred",
-    "--ptf", args.ptf,
     "--genes-list", args.gene_list,
     "--hash-profiles", "crc32"
     ]
 if args.adv_options != "None":
     cmd_chewbbaca.extend(args.adv_options.split())
+if args.ptf:
+    cmd_chewbbaca.extend(["--ptf", args.ptf])
 
 print("- running chewBBACA")
 print(" ".join(cmd_chewbbaca))

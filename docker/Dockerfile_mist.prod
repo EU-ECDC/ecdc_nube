@@ -1,0 +1,16 @@
+FROM docker.io/mambaorg/micromamba:1.2.0
+
+LABEL maintainer="Luca Freschi l.freschi@gmail.com"
+LABEL version="1.1.0"
+
+
+USER root
+RUN apt-get update && apt-get install -y procps
+
+USER $MAMBA_USER
+RUN micromamba create -n mist
+
+RUN micromamba install -n mist python=3.11 mist_typing=1.1.0 -c bioconda -c conda-forge
+RUN micromamba clean --all --yes
+
+ENV PATH /opt/conda/envs/mist/bin:$PATH

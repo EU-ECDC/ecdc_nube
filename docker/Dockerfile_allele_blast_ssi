@@ -1,0 +1,28 @@
+FROM mambaorg/micromamba:1.2.0
+
+LABEL maintainer="ECDC microbiology ecdc.microbiology@ecdc.europa.eu"
+# container name: allele_blast_ssi
+LABEL version="1.0"
+
+USER root
+RUN apt-get update && apt-get install -y procps git
+
+USER $MAMBA_USER
+RUN micromamba create -n allele_blast_ssi
+
+RUN micromamba install -n allele_blast_ssi \
+  python=3.11 \
+  biopython=1.87 \
+  pyfaidx=0.9.0.4 \
+  blast=2.17.0 \
+  matplotlib=3.10.9 \
+  pandas=3.0.3 \
+  -c bioconda -c conda-forge
+
+RUN micromamba clean --all --yes
+
+RUN git clone https://github.com/ssi-dk/cgMLST_scheme_clean_check && \
+  chmod a+x /tmp/cgMLST_scheme_clean_check/chewBBACA/*.py && \
+  chmod a+x /tmp/cgMLST_scheme_clean_check/*.py
+
+ENV PATH /opt/conda/envs/allele_blast_ssi/bin:/tmp/cgMLST_scheme_clean_check:/tmp/cgMLST_scheme_clean_check/chewBBACA:$PATH

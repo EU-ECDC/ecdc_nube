@@ -1,0 +1,24 @@
+FROM mambaorg/micromamba:1.2.0
+
+LABEL maintainer="Luca Freschi l.freschi@gmail.com"
+# container name: denovo_assembly-tools
+# tag: 1.4
+# Note: this is a container with multiple software. The tag is independent 
+# of any version of a specific software
+
+USER root
+RUN apt-get update && apt-get install -y procps
+
+USER $MAMBA_USER
+RUN micromamba create -n denovo_assembly_tools
+
+RUN micromamba install -n denovo_assembly_tools python=3.11 -c bioconda -c conda-forge
+RUN micromamba install -n denovo_assembly_tools spades=3.15.5 -c bioconda -c conda-forge
+RUN micromamba install -n denovo_assembly_tools fastp=0.23.4 -c bioconda -c conda-forge
+RUN micromamba install -n denovo_assembly_tools rasusa=2.1.0 -c bioconda -c conda-forge
+RUN micromamba install -n denovo_assembly_tools fastplong=0.3.0 -c bioconda -c conda-forge
+
+
+RUN micromamba clean --all --yes
+
+ENV PATH /opt/conda/envs/denovo_assembly_tools/bin:$PATH
