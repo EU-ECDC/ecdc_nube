@@ -24,6 +24,10 @@
             "genomeSize": "4.9Mb",
             "defaultSchemas": ["ENTERISO-Ridom-1"]
         },
+	"GONOISO":{
+	    "genomeSize": "2.2Mb",
+	    "defaultSchemas":["GONOISO-PubMLST-89"]
+	},
         "HAVISO":{
             "genomeSize": "",
             "defaultSchemas": [""]
@@ -137,6 +141,17 @@
                     "IONTORRENT": {
                         "chewBBACA":"--minimum-length 0 --bsr 0.6 --force-continue",
                         "refAllelesErrorCorrection":"ENTERISO-Ridom-1/ref_alleles_iontorrent_error_correction_ENTERISO.fasta"
+                }
+            }
+        },
+        "GONOISO-PubMLST-89": {
+                "schemaPath":"GONOISO-PubMLST-89/",
+                "trnFile":"GONOISO-PubMLST-89/Neisseria-gonorrhoeae-GCA_013030075.1.trn",
+                "geneList":"GONOISO-PubMLST-89/list_loci_cgMLST_GONOISO.txt",
+                "advOptions":{
+                    "IONTORRENT": {
+                        "chewBBACA":"--minimum-length 0 --bsr 0.6 --force-continue",
+                        "refAllelesErrorCorrection":"GONOISO-PubMLST-89/ref_alleles_iontorrent_error_correction_GONOISO.fasta"
                 }
             }
         },
