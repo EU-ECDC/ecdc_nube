@@ -33,8 +33,8 @@ process MIST {
   hash_mist.py \
   --mist-json ${prefix}.json \
   --schema-dir ${schema_path} \
-  --output . \
   --prefix ${prefix2} \
-  --sample ${meta.id}
+  --sample ${meta.id} \
+  --assembly ${assembly}
   """
 }
