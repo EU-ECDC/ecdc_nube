@@ -221,6 +221,17 @@
                 }
             }
         },
+        "LISTISO-Ridom-1-MIST": {
+            "schemaPath":"mist/LISTISO-Ridom-1-MIST/LISTISO-Ridom-1-MIST/",
+            "trnFile":"",
+            "geneList":"mist/LISTISO-Ridom-1-MIST/list_loci_cgMLST_LISTISO.txt",
+            "advOptions":{
+                "IONTORRENT": {
+                    "chewBBACA":"--minimum-length 0 --bsr 0.6 --force-continue",
+                    "refAllelesErrorCorrection":"mist/LISTISO-Ridom-1-MIST/ref_alleles_iontorrent_error_correction_LISTISO.fasta"
+                }
+            }
+        },
         "MYCOISO-Ridom-1": {
             "schemaPath":"MYCOISO-Ridom-1/",
             "trnFile":"MYCOISO-Ridom-1/Mycobacterium_tuberculosis_bovis_africanum_canettii.trn",
