@@ -106,7 +106,7 @@ def main() -> int:
                    help="Directory of locus FASTAs (defines locus column universe)")
     p.add_argument("--mist-json",        required=True,
                    help="mist json file with allele calls for the sample")
-    p.add_argument("--output",           required=False, default=".",
+    p.add_argument("--output-dir",           required=False, default=".",
                    help="Output directory")
     p.add_argument("--prefix",           required=True,
                    help="Prefix for output file")
@@ -131,10 +131,10 @@ def main() -> int:
             locus_tags = locus_data.get("tags", [])
             if is_missing(locus_tags):
                 sequence_hash = MISSING_VALUE
-            elif "NOVEL" == locus_tags:
+            elif (len(locus_tags) == 1) and (locus_tags[0] == "NOVEL"):
                 locus_results = locus_data.get("allele_results", {})
                 sequence = locus_results[0].get("sequence", "")
-            elif "EXACT" == locus_tags:
+            elif (len(locus_tags) == 1) and (locus_tags[0] == "EXACT"):
                 locus_results = locus_data.get("allele_results", {})[0]
                 alignment_results = locus_results.get("alignment", {})
                 align_start = alignment_results.get("start", int)
@@ -155,13 +155,14 @@ def main() -> int:
         row_values.append(seq_hash_by_locus[locus])
    
     # Write TSV (chewBBACA-style: FILE column + locus columns).
-    with open(os.path.join(args.output, f"{args.prefix}.tsv"), "w") as out:
+    output_path = os.path.join(args.output_dir, f"{args.prefix}.tsv")
+    with open(output_path, "w") as out:
         out.write("FILE\t" + "\t".join(loci) + "\n")
         out.write(args.sample + "\t" + "\t".join(row_values) + "\n")
 
     n_called = sum(1 for v in row_values if v != MISSING_VALUE)
     print(f"Wrote {n_called}/{len(loci)} called loci for {args.sample} "
-          f"to {args.output}", file=sys.stderr)
+          f"to {output_path}", file=sys.stderr)
     return 0
 
 if __name__ == "__main__":
