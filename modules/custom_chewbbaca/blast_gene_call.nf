@@ -16,6 +16,6 @@ process BLAST_GENE_CALL_SSI {
   def args = task.ext.args ?: ''
   def prefix = task.ext.prefix ?: "${meta.id}"
   """
-  blast_gene_call_per_locus_moreChecks_optimized2_skipNonCDS.py --scheme ${schema_path} --fa ${assembly} --out . --max_workers ${task.cpus} ${args}
+  blast_gene_call_per_locus_moreChecks_optimized2_skipNonCDS_StartCodonCheck.py --scheme ${schema_path} --fa ${assembly} --out . --max_workers ${task.cpus} ${args}
   """
 }
