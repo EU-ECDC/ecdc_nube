@@ -354,8 +354,14 @@ workflow {
   COMBINE_FASTQ(ch_reads_combine.combine_fastqs)
   
   // Creating a channel with all samples with reads (including those for which we downloaded the reads from NCBI/ENA)
-  ch_reads = PREFETCH.out.mix(ch_reads_combine.no_need).mix(COMBINE_FASTQ.out)
-  
+ch_reads = PREFETCH.out
+  .map{ meta, reads ->
+    def new_meta = meta + [single_end: (reads instanceof List ? reads.size() : 1) == 1]
+    [new_meta, reads]
+  }
+  .mix(ch_reads_combine.no_need)
+  .mix(COMBINE_FASTQ.out)
+    
   // Trimming reads, downsampling and generating assemblies
   TRIM(ch_reads)
   DOWNSAMPLE(TRIM.out.map{
