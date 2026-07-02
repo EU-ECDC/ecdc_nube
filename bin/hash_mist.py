@@ -48,14 +48,12 @@ def canonical_hash(seq) -> str:
     if seq is None or not str(seq).strip():
         return MISSING_VALUE
     s = str(seq).upper().strip()
-    canonical = min(s, revcomp(s))
-    return str(zlib.crc32(canonical.encode()))
+    return str(zlib.crc32(s.encode()))
 
 def list_schema_loci(schema_dir: str) -> list:
     """One locus per FASTA file in the schema, sorted for stable column order."""
     extensions = ("*.fasta", "*.fa", "*.fna")
     locus_fasta_files = {}
-
     fastas = sorted(
         f
         for ext in extensions
@@ -63,15 +61,12 @@ def list_schema_loci(schema_dir: str) -> list:
         if os.path.basename(os.path.dirname(f)) ==
         os.path.splitext(os.path.basename(f))[0]
     )
-
     if not fastas:
         raise SystemExit(f"ERROR: no FASTA files in schema dir {schema_dir}")
-
+    loci = []
     for f in fastas:
-        locus = os.path.basename(os.path.dirname(f))
-        locus_fasta_files[locus] = f
-
-    return locus_fasta_files
+        loci.append(os.path.basename(os.path.dirname(f)))
+    return loci
 
 def is_missing(codes: list) -> bool:
     """A code is missing if it matches a missing category"""
@@ -84,18 +79,26 @@ def is_missing(codes: list) -> bool:
             return True
     return False
 
-def get_sequence_from_schema(locus_fasta_files: dict, locus: str, allele: str) -> str:
-    """Extract the allele sequence from the locus fasta file in the schema"""
-    fasta_file = locus_fasta_files.get(locus)
+def get_sequence_from_fasta(fasta_file: str, seq_id: str) -> str:
+    """Extract a fasta sequence based on sequence id"""
     try:
         with open(fasta_file, "r") as f:
             for record in SeqIO.parse(f, "fasta"):
-                if record.id == f"{locus}_{allele}":
+                if record.id == seq_id:
                     return str(record.seq)
     except FileNotFoundError:
         print(f"Error: File '{fasta_file}' not found.")
     except Exception as e:
         print(f"An error occurred: {e}")
+
+def get_sequence_from_assembly(assembly: str, align_start: int, align_end: int, seq_id: str, strand: str):
+    """Extract the allele sequence from the assembly fasta file"""
+    contig_sequence = get_sequence_from_fasta(assembly, seq_id)
+    allele_sequence = contig_sequence[align_start - 1: align_end]
+    if strand == "-":
+        return revcomp(allele_sequence)
+    return allele_sequence
+
 
 def main() -> int:
     p = argparse.ArgumentParser(description=__doc__)
@@ -103,16 +106,18 @@ def main() -> int:
                    help="Directory of locus FASTAs (defines locus column universe)")
     p.add_argument("--mist-json",        required=True,
                    help="mist json file with allele calls for the sample")
-    p.add_argument("--output",           required=True,
-                   help="Output tsv file")
+    p.add_argument("--output-dir",           required=False, default=".",
+                   help="Output directory")
     p.add_argument("--prefix",           required=True,
                    help="Prefix for output file")
     p.add_argument("--sample",           required=True,
                    help="Sample name")
+    p.add_argument("--assembly",         required=True,
+                   help="Assembly fasta")
     args = p.parse_args()
 
-    locus_fasta_files = list_schema_loci(args.schema_dir)
-    loci = sorted(locus_fasta_files.keys())
+    loci_sequential = list_schema_loci(args.schema_dir)
+    loci = sorted(loci_sequential)
 
     # Load loci allele calls from mist json
     seq_hash_by_locus = {}
@@ -126,14 +131,19 @@ def main() -> int:
             locus_tags = locus_data.get("tags", [])
             if is_missing(locus_tags):
                 sequence_hash = MISSING_VALUE
-            elif "NOVEL" in locus_tags:
+            elif (len(locus_tags) == 1) and (locus_tags[0] == "NOVEL"):
                 locus_results = locus_data.get("allele_results", {})
                 sequence = locus_results[0].get("sequence", "")
-            elif "EXACT" in locus_tags:
-                print(locus, locus_allele)
-                sequence = get_sequence_from_schema(locus_fasta_files, locus, locus_allele)
+            elif (len(locus_tags) == 1) and (locus_tags[0] == "EXACT"):
+                locus_results = locus_data.get("allele_results", {})[0]
+                alignment_results = locus_results.get("alignment", {})
+                align_start = alignment_results.get("start", int)
+                align_end = alignment_results.get("end", int)
+                seq_id = alignment_results.get("seq_id", str)
+                strand = alignment_results.get("strand", str)
+                sequence = get_sequence_from_assembly(args.assembly, align_start, align_end, seq_id, strand)
             else:
-                print("ERROR: Something went wrong.")
+                print(f"ERROR: Parsing is not supported for specified locus tags: {locus_tags}")
                 sys.exit(1)
             if sequence is not None:
                 sequence_hash = canonical_hash(sequence)
@@ -145,13 +155,14 @@ def main() -> int:
         row_values.append(seq_hash_by_locus[locus])
    
     # Write TSV (chewBBACA-style: FILE column + locus columns).
-    with open(os.path.join(args.output, f"{args.prefix}.tsv"), "w") as out:
+    output_path = os.path.join(args.output_dir, f"{args.prefix}.tsv")
+    with open(output_path, "w") as out:
         out.write("FILE\t" + "\t".join(loci) + "\n")
         out.write(args.sample + "\t" + "\t".join(row_values) + "\n")
 
     n_called = sum(1 for v in row_values if v != MISSING_VALUE)
     print(f"Wrote {n_called}/{len(loci)} called loci for {args.sample} "
-          f"to {args.output}", file=sys.stderr)
+          f"to {output_path}", file=sys.stderr)
     return 0
 
 if __name__ == "__main__":

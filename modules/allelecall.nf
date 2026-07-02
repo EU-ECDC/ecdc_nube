@@ -44,7 +44,7 @@ process TARANYS {
   time '2h'
   cpus 4
   tag {"${meta.project}:${meta.id}:${schema}"}
-  publishDir {"${params.output}/${meta.project}/taranys/${schema}/"}, overwrite: true, pattern: {"${meta.id}_taranys_${schema}.tsv"}
+  publishDir {"${params.output}/${meta.project}/taranys/${schema}/"}, overwrite: true, pattern: "*.tsv"
 
   input:
     tuple val(meta),

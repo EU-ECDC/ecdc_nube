@@ -3,7 +3,7 @@ process MIST {
   errorStrategy 'ignore'
   time '30m'
   tag {"${meta.project}:${meta.id}:${meta.schema}"}
-  publishDir "${params.output}/${meta.project}/allele_call/${meta.schema}/", overwrite: true
+  publishDir {"${params.output}/${meta.project}/allele_call/${meta.schema}/"}, overwrite: true
 
   input:
   tuple val(meta), path(assembly), path(schema_path)
@@ -33,8 +33,8 @@ process MIST {
   hash_mist.py \
   --mist-json ${prefix}.json \
   --schema-dir ${schema_path} \
-  --output . \
   --prefix ${prefix2} \
-  --sample ${meta.id}
+  --sample ${meta.id} \
+  --assembly ${assembly}
   """
 }

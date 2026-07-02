@@ -23,7 +23,7 @@ Classification codes seen in allele_calling_match.csv:
 
 import argparse
 import csv
-import hashlib
+import zlib
 import os
 import sys
 from glob import glob
@@ -42,18 +42,19 @@ def revcomp(seq: str) -> str:
 
 
 def canonical_hash(seq) -> str:
-    """SHA-256 of the canonical (strand-agnostic) orientation.
+    """CRC32 of the canonical (strand-agnostic) orientation, as a decimal string.
 
-    Canonical = lexicographic min of (seq, revcomp(seq)). This makes the hash
-    invariant to the strand taranys reports the hit on, so the same biological
-    allele in two samples produces the same hash even if one was found on '+'
-    and the other on '-'.
+    Canonical = lexicographic min of (seq, revcomp(seq)), so the same biological
+    allele hashes identically regardless of the strand taranys reports.
+
+    NOTE: CRC32 is a 32-bit space; collisions become non-negligible once the
+    number of distinct alleles approaches ~10^5.
     """
     if seq is None or not str(seq).strip():
         return MISSING_VALUE
     s = str(seq).upper().strip()
     canonical = min(s, revcomp(s))
-    return hashlib.sha256(canonical.encode()).hexdigest()
+    return str(zlib.crc32(canonical.encode()))
 
 
 def list_schema_loci(schema_dir: str) -> list:
