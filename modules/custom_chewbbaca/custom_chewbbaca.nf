@@ -2,7 +2,7 @@ process CUSTOM_CHEWBBACA_SSI {
   container "${params.containerRepository}/ejfresch/custom_chewbbaca_ssi:1.0"
   errorStrategy 'ignore'
   tag {"${meta.project}:${meta.id}:${meta.schema}"}
-  publishDir "${params.output}/${meta.project}/allele_call/${meta.schema}/", overwrite: true
+  publishDir {"${params.output}/${meta.project}/allele_call/${meta.schema}/"}, overwrite: true
   time '30m'
   cpus 3
 
