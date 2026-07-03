@@ -12,6 +12,10 @@
             "genomeSize": "4.2Mb",
             "defaultSchemas": ["CDIFFISO-Ridom-1"]
         },
+        "DERMISO": {
+            "genomeSize": "2.6Mb",
+            "defaultSchemas": ["DERMISO-Ridom-1"]
+        },
         "DIPHISO": {
             "genomeSize": "2.48Mb",
             "defaultSchemas": ["DIPHISO-BIGSdb-1"]
@@ -24,10 +28,10 @@
             "genomeSize": "4.9Mb",
             "defaultSchemas": ["ENTERISO-Ridom-1"]
         },
-	"GONOISO":{
-	    "genomeSize": "2.2Mb",
-	    "defaultSchemas":["GONOISO-PubMLST-89"]
-	},
+        "GONOISO":{
+            "genomeSize": "2.2Mb",
+            "defaultSchemas":["GONOISO-PubMLST-89"]
+        },
         "HAVISO":{
             "genomeSize": "",
             "defaultSchemas": [""]
@@ -108,6 +112,17 @@
                 "IONTORRENT": {
                     "chewBBACA":"--minimum-length 0 --bsr 0.6 --force-continue",
                     "refAllelesErrorCorrection":"CDIFFISO-Ridom-1/ref_alleles_iontorrent_error_correction_CDIFFISO.fasta"
+                }
+            }
+        },
+        "DERMISO-Ridom-1": {
+            "schemaPath":"DERMISO-Ridom-1/",
+            "trnFile":"DERMISO-Ridom-1/Dermatophilus_congolensis.trn",
+            "geneList":"DERMISO-Ridom-1/list_loci_cgMLST_DERMISO.txt",
+            "advOptions":{
+                "IONTORRENT": {
+                    "chewBBACA":"--minimum-length 0 --bsr 0.6 --force-continue",
+                    "refAllelesErrorCorrection":"DERMISO-Ridom-1/ref_alleles_iontorrent_error_correction_DERMISO.fasta"
                 }
             }
         },
