@@ -467,41 +467,50 @@ ch_reads = PREFETCH.out
   HAVISO(ch_data.sequences.filter{meta, sequences -> meta.organism == "HAVISO"})
   POLIISO(ch_data.sequences.filter{meta, sequences -> meta.organism == "POLIISO"})
 
-  workflow.onComplete{
-    if (workflow.success) {
-      println "Workflow completed successfully."
-      // determine when the onComplete event handler was triggered
-      def date = new Date()
-      def custom_date_format = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-      def timestamp_onComplete=custom_date_format.format(date)
+  def wf = workflow
 
-      /* remove the signals, given that all the expected
-      results have been generated */
-      def proc = ['./scripts/remove_signals.sh'].execute()
-      proc.waitForProcessOutput()
+  wf.onComplete {
+    try {
+      if (wf.success) {
+        println "Workflow completed successfully."
+        // determine when the onComplete event handler was triggered
+        def date = new Date()
+        def custom_date_format = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+        def timestamp_onComplete = custom_date_format.format(date)
 
-      // write a NF_READY file
-      def oncomplete_signal = "./data/signals/NF_READY"
-      def content = "$timestamp_onComplete $workflow.runName $workflow.sessionId"
-      file(oncomplete_signal).write(content)
-    }   
+        /* remove the signals, given that all the expected
+        results have been generated */
+        def proc = ['./scripts/remove_signals.sh'].execute()
+        proc.waitForProcessOutput()
+
+        // write a NF_READY file
+        def oncomplete_signal = "./data/signals/NF_READY"
+        def content = "$timestamp_onComplete $wf.runName $wf.sessionId"
+        file(oncomplete_signal).write(content)
+      }
+    } catch (Throwable e) {
+      println "[onComplete] handler failed: ${e}"
+    }
   }
 
-  workflow.onError{
-    // determine when the onError event handler was triggered
-    def date = new Date()
-    def custom_date_format = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-    def timestamp_onError=custom_date_format.format(date)
+  wf.onError {
+    try {
+      // determine when the onError event handler was triggered
+      def date = new Date()
+      def custom_date_format = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+      def timestamp_onError = custom_date_format.format(date)
 
-    // write a NF_ERROR file
-    def filename = "./data/signals/NF_ERROR"
-    def content = "$timestamp_onError\t$workflow.runName\t$workflow.sessionId\t$workflow.errorMessage"
-    file(filename).write(content)
-    println "[onError] errorMessage: $workflow.errorMessage"
-    // remove the ".lock" extensions
-    def proc = ['./scripts/remove_locks.sh'].execute()
-    proc.waitForProcessOutput()
-
+      // write a NF_ERROR file
+      def filename = "./data/signals/NF_ERROR"
+      def content = "$timestamp_onError\t$wf.runName\t$wf.sessionId\t$wf.errorMessage"
+      file(filename).write(content)
+      println "[onError] errorMessage: $wf.errorMessage"
+      // remove the ".lock" extensions
+      def proc = ['./scripts/remove_locks.sh'].execute()
+      proc.waitForProcessOutput()
+    } catch (Throwable e) {
+      println "[onError] handler failed: ${e}"
+    }
   }
 
 }
