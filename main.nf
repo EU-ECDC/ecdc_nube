@@ -64,7 +64,7 @@ process COMBINE_FASTQ {
 }
 
 process TRIM {
-  container "${params.containerRepository}/ejfresch/denovo_assembly-tools:1.3"
+  container "${params.containerRepository}/ejfresch/denovo_assembly-tools:1.4"
   errorStrategy 'ignore'
   time '30m'
   memory '12 GB'
@@ -77,7 +77,11 @@ process TRIM {
   tuple val(meta), path("*-trimmed_?.fastq.gz", arity: '1..*')
  
   shell:
-  if(meta.single_end){
+  if(meta.sequencing_technology == "ONT" || meta.sequencing_technology == "PACBIO"){
+    """
+    fastplong -i ${reads[0]} -o !{meta.id}-trimmed_1.fastq.gz
+    """
+  } else if(meta.single_end){
     """
     fastp -i ${reads[0]} -o !{meta.id}-trimmed_1.fastq.gz
     """
@@ -361,7 +365,7 @@ ch_reads = PREFETCH.out
   }
   .mix(ch_reads_combine.no_need)
   .mix(COMBINE_FASTQ.out)
-    
+
   // Trimming reads, downsampling and generating assemblies
   TRIM(ch_reads)
   DOWNSAMPLE(TRIM.out.map{
