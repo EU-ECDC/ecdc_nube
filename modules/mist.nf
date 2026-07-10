@@ -10,9 +10,7 @@ process MIST {
 
   output:
   path "*.tsv", emit: tsv_mist
-  path "*.json", emit: json
-  path "*.log", emit: log
-  path "*_novel_alleles/*", emit: novel_alleles
+  path "additional_results/*.json", emit: json
 
   script:
   def args = task.ext.args ?: ''
@@ -28,7 +26,6 @@ process MIST {
   --log ${prefix}.log \
   --export-novel \
   ${args}
-  mv novel_alleles/ ${prefix}_novel_alleles/
 
   hash_mist.py \
   --mist-json ${prefix}.json \
@@ -36,5 +33,8 @@ process MIST {
   --prefix ${prefix2} \
   --sample ${meta.id} \
   --assembly ${assembly}
+
+  mkdir additional_results
+  mv ${prefix}.json additional_results/
   """
 }
