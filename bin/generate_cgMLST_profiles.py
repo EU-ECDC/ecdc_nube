@@ -42,7 +42,8 @@ cmd_chewbbaca = [
     "-o", ".",
     "--no-inferred",
     "--genes-list", args.gene_list,
-    "--hash-profiles", "crc32"
+    "--hash-profiles", "crc32",
+    "--output-novel"
     ]
 if args.adv_options != "None":
     cmd_chewbbaca.extend(args.adv_options.split())
