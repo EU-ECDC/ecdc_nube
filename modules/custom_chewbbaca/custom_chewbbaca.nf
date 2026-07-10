@@ -11,12 +11,18 @@ process CUSTOM_CHEWBBACA_SSI {
 
   output:
     path "*.tsv", emit: tsv_chewbbaca_custom
+    path "additional_results/*_novel_alleles.fasta", emit: novel_alleles
+    path "additional_results/*_results_alleles.tsv", emit: raw_results
 
   script:
   def args = task.ext.args ?: ''
   def prefix = task.ext.prefix ?: "${meta.id}_allele-call-SSI_${meta.schema}"
-  def advOpt_chewBBACA = advOptions.get(meta.sequencing_technology, [:]).chewBBACA ?: ''
+  def advOpt = advOptions.get(meta.sequencing_technology, [:]).chewBBACA ?: ''
   """
-  generate_cgMLST_profiles.py -i ${assembly} -a ${meta.id} -g ${schema_path} -gl ${gene_list} -f ${prefix} -ao="--cds --cpu-cores ${task.cpus} ${advOpt_chewBBACA} ${args}"
+  generate_cgMLST_profiles.py -i ${assembly} -a ${meta.id} -g ${schema_path} -gl ${gene_list} -f ${prefix} -ao="--cds --cpu-cores ${task.cpus} ${advOpt} ${args}"
+
+  mkdir additional_results
+  mv results_*/novel_alleles.fasta additional_results/${prefix}_novel_alleles.fasta
+  mv results_*/results_alleles.tsv additional_results/${prefix}_results_alleles.tsv
   """
 }

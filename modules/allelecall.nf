@@ -15,7 +15,7 @@ process ALLELE_CALL {
   
   script:
   def prefix = task.ext.prefix ?: "${meta.id}_allele-call_${meta.schema}"
-  def advOpt = advOptions[meta.sequencing_technology]?.chewBBACA ?: "None"
+  def advOpt = advOptions.get(meta.sequencing_technology, [:]).chewBBACA ?: ''
   """
   generate_cgMLST_profiles.py -i ${assembly} -a ${meta.id} -g ${schema_path} -p ${trn_file} -gl ${gene_list} -ao "${advOpt}" -f ${prefix}
 
