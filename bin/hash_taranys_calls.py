@@ -41,11 +41,8 @@ def revcomp(seq: str) -> str:
     return seq.translate(_COMPLEMENT)[::-1]
 
 
-def canonical_hash(seq) -> str:
-    """CRC32 of the canonical (strand-agnostic) orientation, as a decimal string.
-
-    Canonical = lexicographic min of (seq, revcomp(seq)), so the same biological
-    allele hashes identically regardless of the strand taranys reports.
+def get_hash(seq) -> str:
+    """CRC32 hash of the sequence, as a decimal string.
 
     NOTE: CRC32 is a 32-bit space; collisions become non-negligible once the
     number of distinct alleles approaches ~10^5.
@@ -53,8 +50,7 @@ def canonical_hash(seq) -> str:
     if seq is None or not str(seq).strip():
         return MISSING_VALUE
     s = str(seq).upper().strip()
-    canonical = min(s, revcomp(s))
-    return str(zlib.crc32(canonical.encode()))
+    return str(zlib.crc32(s.encode()))
 
 
 def list_schema_loci(schema_dir: str) -> list:
@@ -139,7 +135,7 @@ def main() -> int:
         if is_missing(code):
             row_values.append(MISSING_VALUE)
         else:
-            row_values.append(canonical_hash(seq_by_locus.get(locus)))
+            row_values.append(get_hash(seq_by_locus.get(locus)))
 
     # Write TSV (chewBBACA-style: FILE column + locus columns).
     with open(args.output, "w") as out:
