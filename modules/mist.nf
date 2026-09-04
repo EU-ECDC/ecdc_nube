@@ -12,7 +12,7 @@ process MIST {
   path "*.tsv", emit: tsv_mist
   path "*.json", emit: json
   path "*.log", emit: log
-  path "*_novel_alleles/*", emit: novel_alleles
+  path "*_novel_alleles/*", emit: novel_alleles, optional: true
 
   script:
   def args = task.ext.args ?: ''
