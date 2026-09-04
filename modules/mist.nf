@@ -28,7 +28,10 @@ process MIST {
   --log ${prefix}.log \
   --export-novel \
   ${args}
-  mv novel_alleles/ ${prefix}_novel_alleles/
+
+  if [ -d "novel_alleles/" ]; then
+      mv novel_alleles/ ${prefix}_novel_alleles/
+  fi
 
   hash_mist.py \
   --mist-json ${prefix}.json \
