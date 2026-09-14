@@ -11,6 +11,7 @@ include { MIST } from './modules/mist.nf'
 include { ALLELE_CALL ; TARANYS } from './modules/allelecall.nf'
 include { IONTORRENT_ERROR_CORRECTION } from './modules/iontorrent_error_correction.nf'
 include { CUSTOM_ALLELE_CALL_SSI } from './subworkflows/allele_call_custom_chewbbaca.nf'
+include { ALLELE_CALL_PULSENET } from './subworkflows/allele_call_pulsenet.nf'
 
 
 def parseJson(input_file){
@@ -389,7 +390,7 @@ ch_reads = PREFETCH.out
       no_need: true
   }
   
-  allele_call_experiments = ["allele_call", "allele_call_SSI", "allele_call_mist"]
+  allele_call_experiments = ["allele_call", "allele_call_SSI", "allele_call_mist", "allele_call_pulsenet"]
 
   IONTORRENT_ERROR_CORRECTION(assembly_per_schema_correction.iontorrent
     .filter{ meta, assembly -> allele_call_experiments.any { meta.experiment_list.contains(it) }}
@@ -448,6 +449,12 @@ ch_reads = PREFETCH.out
       "${params.allelecallSchemas}/${settings["schemas"][meta.schema].schemaPath}"
       ]
     }
+  )
+
+  // Generating cgMLST profiles with PULSENET
+  ALLELE_CALL_PULSENET(assembly_per_schema_corrected
+    .filter{ meta, assembly -> meta.experiment_list.contains("allele_call_pulsenet") },
+    settings
   )
 
   // QC
