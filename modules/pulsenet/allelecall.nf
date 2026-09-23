@@ -1,5 +1,5 @@
 process PULSENET_ALLELECALLING {
-  container "${params.containerRepository}/ejfresch/pulsenet_allelecall:1.0"
+  container "${params.containerRepository}/ejfresch/pulsenet_allelecall:1.0.0"
   errorStrategy 'ignore'
   time '30m'
   tag {"${meta.project}:${meta.id}:${meta.schema}"}
@@ -18,6 +18,8 @@ process PULSENET_ALLELECALLING {
     tuple val(meta), path("*_calls_standard.json.gz"), emit: standard_calls
     tuple val(meta), path("*_calls_core_standard.csv.gz"), path("*_calls_core_pcr.csv.gz"), emit: csv_core
     tuple val(meta), path("*_calls_accessory_standard.csv.gz"), path("*_calls_accessory_pcr.csv.gz"), emit: csv_accessory
+    tuple val(meta), path("*_messages.txt"), emit: log
+    tuple val(meta), path("*.tsv"), emit: hashed_tsv
 
   script:
   def args = task.ext.args ?: ''
@@ -48,5 +50,14 @@ process PULSENET_ALLELECALLING {
   do
     mv "\$FILE" "${prefix}_\$FILE"
   done
+
+  mv work/logs/messages.txt ${prefix}_messages.txt
+
+  gzip -dc ${prefix}_allele_calls.json.gz > ${prefix}_allele_calls.json
+  hash_pulsenet.py \
+  --pulsenet-json ${prefix}_allele_calls.json \
+  --output-dir . \
+  --prefix ${prefix} \
+  --sample ${meta.id}
   """
 }
