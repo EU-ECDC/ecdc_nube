@@ -356,6 +356,66 @@
                 "refAllelesErrorCorrection":"YERSISO-BIGSdb-1/ref_alleles_iontorrent_error_correction_YERSISO.fasta"
                 }
             }
+        },
+        "CDIFFISO-Ridom-1-Pulsenet": {
+            "schemaPath":"pulsenet/CDIFFISO-Ridom-1-Pulsenet/",
+            "trnFile":"",
+            "geneList":"pulsenet/CDIFFISO-Ridom-1-Pulsenet/list_loci_cgMLST_CDIFFISO.txt",
+            "advOptions":{
+                "IONTORRENT": {
+                    "refAllelesErrorCorrection":"pulsenet/CDIFFISO-Ridom-1-Pulsenet/ref_alleles_iontorrent_error_correction_CDIFFISO.fasta"
+                }
+            }
+        },
+        "ECOLIISO-ChewieNS-1-Pulsenet": {
+            "schemaPath":"pulsenet/ECOLIISO-ChewieNS-1-Pulsenet/",
+            "trnFile":"",
+            "geneList":"pulsenet/ECOLIISO-ChewieNS-1-Pulsenet/list_loci_cgMLST_ECOLIISO.txt",
+            "advOptions":{
+                "IONTORRENT": {
+                    "refAllelesErrorCorrection":"pulsenet/ECOLIISO-ChewieNS-1-Pulsenet/ref_alleles_iontorrent_error_correction_ECOLIISO.fasta"
+                }
+            }
+        },
+        "LISTISO-ChewieNS-1-Pulsenet": {
+            "schemaPath":"pulsenet/LISTISO-ChewieNS-1-Pulsenet/",
+            "trnFile":"",
+            "geneList":"pulsenet/LISTISO-ChewieNS-1-Pulsenet/list_loci_cgMLST_LISTISO.txt",
+            "advOptions":{
+                "IONTORRENT": {
+                    "refAllelesErrorCorrection":"pulsenet/LISTISO-ChewieNS-1-Pulsenet/ref_alleles_iontorrent_error_correction_LISTISO.fasta"
+                }
+            }
+        },
+        "MYCOISO-Ridom-1-Pulsenet": {
+            "schemaPath":"pulsenet/MYCOISO-Ridom-1-Pulsenet/",
+            "trnFile":"",
+            "geneList":"pulsenet/MYCOISO-Ridom-1-Pulsenet/list_loci_cgMLST_MYCOISO.txt",
+            "advOptions":{
+                "IONTORRENT": {
+                    "refAllelesErrorCorrection":"pulsenet/MYCOISO-Ridom-1-Pulsenet/ref_alleles_iontorrent_error_correction_MYCOISO.fasta"
+                }
+            }
+        },
+        "SALMISO-ChewieNS-1-Pulsenet": {
+            "schemaPath":"pulsenet/SALMISO-ChewieNS-1-Pulsenet/",
+            "trnFile":"",
+            "geneList":"pulsenet/SALMISO-ChewieNS-1-Pulsenet/list_loci_cgMLST_SALMISO.txt",
+            "advOptions":{
+                "IONTORRENT": {
+                    "refAllelesErrorCorrection":"pulsenet/SALMISO-ChewieNS-1-Pulsenet/ref_alleles_iontorrent_error_correction_SALMISO.fasta"
+                }
+            }
+        },
+        "YERSISO-BIGSdb-1-Pulsenet": {
+            "schemaPath":"pulsenet/YERSISO-BIGSdb-1-Pulsenet/",
+            "trnFile":"",
+            "geneList":"pulsenet/YERSISO-BIGSdb-1-Pulsenet/list_loci_cgMLST_YERSISO.txt",
+            "advOptions":{
+                "IONTORRENT": {
+                    "refAllelesErrorCorrection":"pulsenet/YERSISO-BIGSdb-1-Pulsenet/ref_alleles_iontorrent_error_correction_YERSISO.fasta"
+                }
+            }
         }
     }
 }
