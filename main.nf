@@ -22,7 +22,6 @@ def parseJson(input_file){
 }
 
 process PREFETCH {
-  container "${params.containerRepository}/ejfresch/ncbi-tools:2.3"
   errorStrategy { 
     //TODO would be nice to have 'ignore' right away if the exit code is 80. 
     if (task.attempt == 1) {
@@ -46,7 +45,6 @@ process PREFETCH {
 }
 
 process COMBINE_FASTQ {
-  container "${params.containerRepository}/ejfresch/ncbi-tools:2.3"
   errorStrategy 'ignore'
   time '30m'
   tag {"${meta.project}:${meta.id}"}
@@ -65,7 +63,6 @@ process COMBINE_FASTQ {
 }
 
 process TRIM {
-  container "${params.containerRepository}/ejfresch/denovo_assembly-tools:1.3"
   errorStrategy 'ignore'
   time '30m'
   memory '12 GB'
@@ -91,7 +88,6 @@ process TRIM {
 }
 
 process DOWNSAMPLE {
-  container "${params.containerRepository}/ejfresch/denovo_assembly-tools:1.3"
   errorStrategy 'ignore'
   time '30m'
   tag {"${meta.project}:${meta.id}"}
@@ -116,7 +112,6 @@ process DOWNSAMPLE {
 }
 
 process ASSEMBLE {
-  container "${params.containerRepository}/ejfresch/denovo_assembly-tools:1.2"
   errorStrategy 'ignore'
   //time '20h'
   tag {"${meta.project}:${meta.id}"}
@@ -171,7 +166,6 @@ process ASSEMBLE {
 }
 
 process KLEBORATE {
-  container "${params.containerRepository}/ejfresch/kleborate:1.0"
   errorStrategy 'ignore'
   tag {"${meta.project}:${meta.id}"}
   publishDir {"${params.output}/${meta.project}/amr/"}, overwrite: true
@@ -189,7 +183,6 @@ process KLEBORATE {
 }
 
 process RESFINDER {
-  container 'docker.io/genomicepidemiology/resfinder'
   containerOptions '--volume $(pwd):/app --user root'
   errorStrategy 'ignore'
   tag {"${meta.project}:${meta.id}"}
@@ -208,7 +201,6 @@ process RESFINDER {
 }
 
 process SPECIES_VERIFICATION {
-  container "docker.io/ejfresch/fastani:1.34"
   errorStrategy 'ignore'
   tag {"${meta.project}:${meta.id}"}
   publishDir {"${params.output}/${meta.project}/species_verification/"}, overwrite: true

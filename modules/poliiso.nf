@@ -1,5 +1,4 @@
 process SEQ_ALIGN_PHYLOGENY{
-  container "docker.io/ejfresch/augur:D"
   errorStrategy 'ignore'
   publishDir {"${params.output}/${meta.project}/"}, overwrite: true
   tag {"${meta.project}:${meta.id}"}
