@@ -1,13 +1,36 @@
 {
     "organism":{
             "MYCOISO":{
-            "defaultSchemas": ["MYCOISO-Ridom-1"]}
+            "defaultSchemas": ["MYCOISO-Ridom-1"]},
+            "LISTISO":{
+            "defaultSchemas": ["LISTISO-ChewieNS-1"]},
+            "CDIFFISO":{
+            "defaultSchemas": ["CDIFFISO-Ridom-1"]},
+            "SALMISO":{
+            "defaultSchemas": ["SALMISO-ChewieNS-1"]}
     },
     "schemas": {
         "MYCOISO-Ridom-1": {
         "schemaPath": "taranys/MYCOISO-Ridom-1/new_schema",
         "referenceAllelesPath": "taranys/MYCOISO-Ridom-1/ref_alleles",
         "annotationFile": "taranys/MYCOISO-Ridom-1/allele_annotation.tar.gz"
+        },
+        "LISTISO-ChewieNS-1": {
+        "schemaPath": "taranys/LISTISO-ChewieNS-1/new_schema",
+        "referenceAllelesPath": "taranys/LISTISO-ChewieNS-1/ref_alleles",
+        "annotationFile": "taranys/LISTISO-ChewieNS-1/allele_annotation.tar.gz"
+        },
+        "CDIFFISO-Ridom-1": {
+        "schemaPath": "taranys/CDIFFISO-Ridom-1/new_schema",
+        "referenceAllelesPath": "taranys/CDIFFISO-Ridom-1/ref_alleles",
+        "annotationFile": "taranys/CDIFFISO-Ridom-1/allele_annotation.tar.gz"
+        },
+	"SALMISO-ChewieNS-1": {
+        "schemaPath": "taranys/SALMISO-ChewieNS-1/new_schema",
+        "referenceAllelesPath": "taranys/SALMISO-ChewieNS-1/ref_alleles",
+        "annotationFile": "taranys/SALMISO-ChewieNS-1/allele_annotation.tar.gz"
         }
+
+
     }
 }
