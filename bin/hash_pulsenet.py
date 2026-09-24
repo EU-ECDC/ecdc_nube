@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Hash mist allele calls into a wide chewBBACA-style profile (TSV).
+Hash pulsenet allele calls into a wide chewBBACA-style profile (TSV).
 
 Output: header row "FILE\\t<locus1>\\t<locus2>\\t..." followed by one data row
 for the sample. Each cell is either a 16-hex-char hash of the called allele
@@ -85,8 +85,6 @@ def main() -> int:
                 sequence_hash = canonical_hash(sequence)
             else:
                 sequence_hash = MISSING_VALUE
-                print(locus)
-                print(locus_data)
             seq_hash_by_locus[locus] = sequence_hash
    
     output_path = os.path.join(args.output_dir, f"{args.prefix}.tsv")
