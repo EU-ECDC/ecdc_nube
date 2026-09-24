@@ -1,5 +1,4 @@
 process AMRFINDER {
-  container "${params.containerRepository}/ncbi/amr:4.0.3-2024-10-22.1"
   errorStrategy 'ignore'
   time '10m'
   tag {"${meta.project}:${meta.id}"}
@@ -18,7 +17,6 @@ process AMRFINDER {
 }
 
 process MLST_CGE {
-  container "${params.containerRepository}/ejfresch/typing:1.0"
   errorStrategy 'ignore'
   time '10m'
   tag {"${meta.project}:${meta.id}"}
