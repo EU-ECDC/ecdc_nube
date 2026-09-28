@@ -42,7 +42,7 @@
         },
         "LEGIISO": {
             "genomeSize": "3.5Mb",
-            "defaultSchemas": ["LEGIISO-Ridom-1"]
+            "defaultSchemas": ["LEGIISO-Ridom-1","LEGIISO-LIT-1"]
         },
         "LISTISO":{
             "genomeSize": "3Mb",
@@ -228,7 +228,7 @@
         "LEGIISO-LIT-1": {
             "schemaPath":"LEGIISO-LIT-1/",
             "trnFile":"LEGIISO-LIT-1/Legionella_pneumophila.trn",
-            "geneList":"LEGIISO-LIT-1/list_loci_cgMLST_LEGIISO.txt",
+            "geneList":"LEGIISO-LIT-1/list_loci_wgMLST_LEGIISO.txt",
             "advOptions":{
                 "IONTORRENT": {
                     "chewBBACA":"--minimum-length 0 --bsr 0.6 --force-continue",
