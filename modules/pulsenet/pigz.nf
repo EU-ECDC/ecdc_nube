@@ -1,5 +1,4 @@
 process PIGZ_COMPRESS {
-  container "${params.containerRepository}/ejfresch/pigz:2.8"
   errorStrategy 'terminate'
   tag {"${meta.project}:${meta.id}"}
   cpus 1

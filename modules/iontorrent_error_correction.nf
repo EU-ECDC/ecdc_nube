@@ -1,5 +1,4 @@
 process IONTORRENT_ERROR_CORRECTION {
-  container "${params.containerRepository}/ejfresch/chewbbaca:3.3.10"
   errorStrategy 'ignore'
   time '30m'
   tag {"${meta.project}:${meta.id}"}

@@ -1,5 +1,4 @@
 process QUAST {
-  container "${params.containerRepository}/ejfresch/quast:5.2.0"
   errorStrategy 'ignore'
   time '10m'
   tag {"${meta.project}:${meta.id}"}

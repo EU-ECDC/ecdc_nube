@@ -1,5 +1,4 @@
 process PULSENET_ALLELECALLING {
-  container "${params.containerRepository}/ejfresch/pulsenet_allelecall:1.0.0"
   errorStrategy 'ignore'
   time '30m'
   tag {"${meta.project}:${meta.id}:${meta.schema}"}
