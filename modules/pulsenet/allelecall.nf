@@ -1,7 +1,8 @@
 process PULSENET_ALLELECALLING {
   container "${params.containerRepository}/ejfresch/pulsenet_allelecall:1.0.0"
   errorStrategy 'ignore'
-  time '30m'
+  time '2h'
+  cpus 3
   tag {"${meta.project}:${meta.id}:${meta.schema}"}
   publishDir {"${params.output}/${meta.project}/allele_call_pulsenet/${meta.schema}/"}, overwrite: true
 
