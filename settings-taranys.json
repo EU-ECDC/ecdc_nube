@@ -33,6 +33,11 @@
             "schemaPath": "taranys/SALMISO-ChewieNS-1/new_schema",
             "referenceAllelesPath": "taranys/SALMISO-ChewieNS-1/ref_alleles",
             "annotationFile": "taranys/SALMISO-ChewieNS-1/allele_annotation.tar.gz"
+        },
+	    "ECOLIISO-ChewieNS-1": {
+            "schemaPath": "taranys/ECOLIISO-ChewieNS-1/new_schema",
+            "referenceAllelesPath": "taranys/ECOLIISO-ChewieNS-1/ref_alleles",
+            "annotationFile": "taranys/ECOLIISO-ChewieNS-1/allele_annotation.tar.gz"
         }
     }
 }
