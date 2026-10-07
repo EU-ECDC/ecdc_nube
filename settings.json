@@ -357,6 +357,28 @@
                 }
             }
         },
+        "ECOLIISO-ChewieNS-1-MIST": {
+            "schemaPath":"mist/ECOLIISO-ChewieNS-1-MIST/ECOLIISO-ChewieNS-1-MIST/",
+            "trnFile":"",
+            "geneList":"mist/ECOLIISO-ChewieNS-1-MIST/list_loci_cgMLST_ECOLIISO.txt",
+            "advOptions":{
+                "IONTORRENT": {
+                    "chewBBACA":"--minimum-length 0 --bsr 0.6 --force-continue",
+                    "refAllelesErrorCorrection":"mist/ECOLIISO-ChewieNS-1-MIST/ref_alleles_iontorrent_error_correction_ECOLIISO.fasta"
+                }
+            }
+        },
+        "ECOLIISO-ChewieNS-1-SSI-0.25": {
+            "schemaPath":"Custom-chewBBACA-SSI/ECOLIISO-ChewieNS-1-SSI-0.25/ECOLIISO-ChewieNS-1-SSI-0.25/",
+            "trnFile":"",
+            "geneList":"Custom-chewBBACA-SSI/ECOLIISO-ChewieNS-1-SSI-0.25/list_loci_cgMLST_ECOLIISO.txt",
+            "advOptions":{
+                "IONTORRENT": {
+                    "chewBBACA":"--minimum-length 0 --bsr 0.6 --force-continue",
+                    "refAllelesErrorCorrection":"Custom-chewBBACA-SSI/ECOLIISO-ChewieNS-1-SSI-0.25/ref_alleles_iontorrent_error_correction_ECOLIISO.fasta"
+                }
+            }
+        },        
         "CDIFFISO-Ridom-1-Pulsenet": {
             "schemaPath":"pulsenet/CDIFFISO-Ridom-1-Pulsenet/",
             "trnFile":"",
