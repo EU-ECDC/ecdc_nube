@@ -12,13 +12,7 @@ process PULSENET_ALLELECALLING {
   output:
     tuple val(meta), path("*_outputs.json"), emit: outputs
     tuple val(meta), path("*_stats_calls.json.gz"), emit: stats
-    tuple val(meta), path("*_allele_calls.xml.gz"), emit: allele_calls_xml
     tuple val(meta), path("*_allele_calls.json.gz"), emit: allele_calls_json
-    tuple val(meta), path("*_allele_calls.bam"), emit: allele_calls_bam
-    tuple val(meta), path("*_allele_calls.bam.bai"), emit: allele_calls_bai
-    tuple val(meta), path("*_calls_standard.json.gz"), emit: standard_calls
-    tuple val(meta), path("*_calls_core_standard.csv.gz"), path("*_calls_core_pcr.csv.gz"), emit: csv_core
-    tuple val(meta), path("*_calls_accessory_standard.csv.gz"), path("*_calls_accessory_pcr.csv.gz"), emit: csv_accessory
     tuple val(meta), path("*_messages.txt"), emit: log
     tuple val(meta), path("*.tsv"), emit: hashed_tsv
 
@@ -39,15 +33,7 @@ process PULSENET_ALLELECALLING {
   for FILE in \
     outputs.json \
     stats_calls.json.gz \
-    allele_calls.xml.gz \
-    allele_calls.json.gz \
-    allele_calls.bam \
-    allele_calls.bam.bai \
-    calls_standard.json.gz \
-    calls_core_standard.csv.gz \
-    calls_core_pcr.csv.gz \
-    calls_accessory_standard.csv.gz \
-    calls_accessory_pcr.csv.gz
+    allele_calls.json.gz
   do
     mv "\$FILE" "${prefix}_\$FILE"
   done
