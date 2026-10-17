@@ -1,5 +1,4 @@
 process ALLELE_CALL {
-  container "${params.containerRepository}/ejfresch/chewbbaca:3.3.10"
   errorStrategy 'ignore'
   time '30m'
   tag {"${meta.project}:${meta.id}:${meta.schema}"}
@@ -39,7 +38,6 @@ process ALLELE_CALL {
 
 
 process TARANYS {
-  container "${params.containerRepository}/ejfresch/taranys:3.0.1-d"
   errorStrategy 'ignore'
   time '2h'
   cpus 4
