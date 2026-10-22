@@ -11,6 +11,9 @@
         },
         "SALMISO":{
             "defaultSchemas": ["SALMISO-ChewieNS-1"]
+        },
+        "ECOLIISO":{
+            "defaultSchemas": ["ECOLIISO-ChewieNS-1"]
         }
     },
     "schemas": {
