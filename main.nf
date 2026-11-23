@@ -156,14 +156,14 @@ process ASSEMBLE {
   } else if(meta.sequencing_technology == "ONT"){
     if(meta.single_end){
       """
-      flye --nano-hq ${reads[0]} --out-dir ${meta.id}_assembly
+      flye --meta --nano-hq ${reads[0]} --out-dir ${meta.id}_assembly
       ln ${meta.id}_assembly/assembly.fasta ${meta.id}.fasta
       """
     }
   } else if(meta.sequencing_technology == "PACBIO"){
     if(meta.single_end){
       """
-      flye --pacbio-hifi ${reads[0]} --out-dir ${meta.id}_assembly
+      flye --meta --pacbio-hifi ${reads[0]} --out-dir ${meta.id}_assembly
       ln ${meta.id}_assembly/assembly.fasta ${meta.id}.fasta
       """
     }
