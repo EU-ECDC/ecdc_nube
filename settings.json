@@ -60,6 +60,10 @@
             "genomeSize": "",
             "defaultSchemas": [""]
         },
+        "PROTISO":{
+            "genomeSize": "4.1Mb",
+            "defaultSchemas": ["PROTISO-Ridom-1"]
+        },
         "PROVISO":{
             "genomeSize": "4.55Mb",
             "defaultSchemas": ["PROVISO-Custom-1"]
@@ -299,6 +303,17 @@
                 "IONTORRENT": {
                     "chewBBACA":"--minimum-length 0 --bsr 0.6 --force-continue",
                     "refAllelesErrorCorrection":"mist/MYCOISO-Ridom-1-MIST/ref_alleles_iontorrent_error_correction_MYCOISO.fasta"
+                }
+            }
+        },
+        "PROTISO-Ridom-1": {
+            "schemaPath":"PROTISO-Ridom-1/PROTISO-Ridom-1",
+            "trnFile":"PROTISO-Ridom-1/PROTISO-Ridom-1/proteus_mirabilis.trn",
+            "geneList":"PROTISO-Ridom-1/PROTISO-Ridom-1/list_loci_cgMLST_PROTISO.txt",
+            "advOptions":{
+                "IONTORRENT": {
+                    "chewBBACA":"--minimum-length 0 --bsr 0.6 --force-continue",
+                    "refAllelesErrorCorrection":"PROTISO-Ridom-1/PROTISO-Ridom-1/ref_alleles_iontorrent_error_correction_PROTISO.fasta"
                 }
             }
         },
